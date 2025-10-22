@@ -1,5 +1,6 @@
 <?php
 // Simple autoloader for TwitterOAuth
+require_once __DIR__ . '/composer/ca-bundle/src/CaBundle.php';
 spl_autoload_register(function ($class) {
     $prefix = 'Abraham\\TwitterOAuth\\';
     $base_dir = __DIR__ . '/abraham/twitteroauth/src/';
