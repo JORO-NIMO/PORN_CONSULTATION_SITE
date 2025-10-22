@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Submit Consultation Request</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <section class="card">
+      <h2>Submit Consultation Request</h2>
+      <div id="formAlert" class="alert" style="display:none;" role="alert" aria-live="polite"></div>
+      <form id="consultForm" class="form" action="submit_consult.php" method="POST" novalidate>
+        <div class="grid two">
+          <div class="form-group">
+            <label for="name">Full Name<span class="req">*</span></label>
+            <input type="text" id="name" name="name" required />
+          </div>
+          <div class="form-group">
+            <label for="regno">Registration Number<span class="req">*</span></label>
+            <input type="text" id="regno" name="regno" required />
+          </div>
+        </div>
+
+        <div class="grid two">
+          <div class="form-group">
+            <label for="phone">Phone<span class="req">*</span></label>
+            <input type="tel" id="phone" name="phone" placeholder="e.g. +256700000000" required />
+          </div>
+          <div class="form-group">
+            <label for="course">Course<span class="req">*</span></label>
+            <input type="text" id="course" name="course" required />
+          </div>
+        </div>
+
+        <div class="grid two">
+          <div class="form-group">
+            <label for="email">Email<span class="req">*</span></label>
+            <input type="email" id="email" name="email" required />
+          </div>
+          <div class="form-group">
+            <label for="lecturer">Lecturer<span class="req">*
+            </span></label>
+            <select id="lecturer" name="lecturer" required>
+              <option value="" selected disabled>-- Select Lecturer --</option>
+              <option>Dr. Jane Katusiime</option>
+              <option>Prof. Adones Rukundo</option>
+              <option>Dr. Aisha Kimbugwe</option>
+              <option>Mr. David Oloro</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="preferred_time">Preferred Time<span class="req">*</span></label>
+          <input type="datetime-local" id="preferred_time" name="preferred_time" required />
+        </div>
+
+        <div class="form-group">
+          <label for="message">Message / Question<span class="req">*</span></label>
+          <textarea id="message" name="message" rows="6" required></textarea>
+        </div>
+
+        <div class="actions">
+          <button class="btn primary" type="submit">Send Request</button>
+          <a class="btn" href="index.html" role="button">Back</a>
+        </div>
+      </form>
+    </section>
+  </main>
+  <script>
+  (function() {
+    var form = document.getElementById('consultForm');
+    var alertBox = document.getElementById('formAlert');
+    function showAlert(type, html) {
+      alertBox.className = 'alert ' + type;
+      alertBox.innerHTML = html;
+      alertBox.style.display = 'block';
+    }
+    function clearAlert() {
+      alertBox.style.display = 'none';
+      alertBox.className = 'alert';
+      alertBox.innerHTML = '';
+    }
+    function validate() {
+      var valid = true;
+      ['name','regno','phone','course','email','lecturer','preferred_time','message'].forEach(function(id){
+        var el = document.getElementById(id);
+        if (!el) return;
+        if (!el.value ||
+            (id==='email' && !/^\S+@\S+\.[\w-]+$/.test(el.value)) ||
+            (id==='phone' && !/^[+]?\d[\d\s-]{6,}$/.test(el.value))) {
+          valid = false;
+        }
+      });
+      return valid;
+    }
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      clearAlert();
+      if (!validate()) {
+        showAlert('error', '<strong>There were problems with your submission:</strong><ul><li>Please complete all required fields with valid information.</li></ul>');
+        return;
+      }
+      var submitBtn = form.querySelector('button[type="submit"]');
+      if (submitBtn) { submitBtn.disabled = true; }
+      var formData = new FormData(form);
+      fetch(form.action, {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        body: formData
+      }).then(function(res){
+        return res.json().catch(function(){ return { ok:false, errors:['Unexpected response.'] }; });
+      }).then(function(data){
+        if (data && data.ok) {
+          showAlert('success', 'Your consultation request has been submitted successfully.');
+          form.reset();
+        } else {
+          var errs = (data && Array.isArray(data.errors) && data.errors.length) ? data.errors : ['An error occurred while saving your request. Please try again later.'];
+          var list = '<strong>There were problems with your submission:</strong><ul>' + errs.map(function(e){ return '<li>'+String(e)+'</li>'; }).join('') + '</ul>';
+          showAlert('error', list);
+        }
+      }).catch(function(){
+        showAlert('error', 'Network error. Please try again.');
+      }).finally(function(){
+        if (submitBtn) { submitBtn.disabled = false; }
+      });
+    });
+  })();
+  </script>
+</body>
+</html>
+
+

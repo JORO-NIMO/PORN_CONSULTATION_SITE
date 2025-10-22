@@ -1,6 +1,6 @@
 # Freedom Path - Anti-Pornography Campaign Platform
 
-A comprehensive web platform designed to support individuals struggling with pornography addiction through professional psychiatric help, anonymous messaging, educational resources, and community support.
+A comprehensive web platform designed to support individuals struggling with pornography addiction through professional psychiatric help, anonymous messaging, educational resources, and community support. Integrated with X (formerly Twitter) for real-time recovery content and community engagement.
 
 ## 🌟 Features
 
@@ -12,6 +12,7 @@ A comprehensive web platform designed to support individuals struggling with por
 - **Dynamic Form Builder**: Create and share customizable assessment forms
 - **Educational Content**: Curated resources about pornography effects and recovery
 - **Automated Content Scraping**: Web scraper for educational content from reputable sources
+- **X (Twitter) Integration**: Real-time recovery content from the X platform
 - **Progress Tracking**: Monitor recovery journey with custom forms
 
 ### Security Features
@@ -38,8 +39,47 @@ A comprehensive web platform designed to support individuals struggling with por
 - **Database**: SQLite (portable, no installation needed!)
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
 - **Video Calling**: WebRTC (Daily.co compatible)
+- **X (Twitter) API**: For fetching real-time recovery content
 - **Architecture**: MVC-inspired structure
 - **Security**: bcrypt, prepared statements, CSRF tokens
+
+## 🔌 X (Twitter) Integration
+
+The platform includes integration with X (formerly Twitter) to display real-time recovery-related content. Here's how it works:
+
+### Features
+- Fetches recovery-related tweets using the X API v2
+- Displays content in a clean, responsive feed
+- Updates automatically via scheduled tasks
+- Supports media (images) in tweets
+- Secure API key management
+
+### Setup
+1. **Get X API Credentials**:
+   - Apply for a developer account at [developer.x.com](https://developer.x.com/)
+   - Create a new Project and App
+   - Generate API keys and access tokens
+
+2. **Configure API Keys**:
+   - Copy `config/twitter_api_keys.php` to `config/api_keys.php`
+   - Update with your X API credentials
+
+3. **Run Database Migration**:
+   ```bash
+   php migrations/001_create_twitter_tables.php
+   ```
+
+4. **Test the Integration**:
+   ```bash
+   php scraper/fetch-twitter.php
+   ```
+   Visit: `http://your-site.com/twitter-feed.php`
+
+5. **Schedule Updates** (Windows Task Scheduler):
+   - Program: `C:\xampp\php\php.exe`
+   - Arguments: `E:\xammp\htdocs\consultation_site\scraper\fetch-twitter.php`
+   - Start in: `E:\xampp\htdocs\consultation_site\scraper\`
+   - Trigger: Daily at 2:00 AM
 
 ## 📋 Installation
 
