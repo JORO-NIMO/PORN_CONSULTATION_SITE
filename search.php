@@ -25,8 +25,6 @@ if ($q !== '' && GOOGLE_API_KEY && GOOGLE_CX) {
     } else {
         $error = 'Could not fetch results at this time';
     }
-} elseif ($q !== '' && (!GOOGLE_API_KEY || !GOOGLE_CX)) {
-    $error = 'Search is not configured. Please set GOOGLE_API_KEY and GOOGLE_CX.';
 }
 ?><!DOCTYPE html>
 <html lang="en">
@@ -40,14 +38,15 @@ if ($q !== '' && GOOGLE_API_KEY && GOOGLE_CX) {
 <?php include __DIR__ . '/includes/header.php'; ?>
 <main class="container" style="padding:2rem 1rem;">
     <h1>Search Better Ways of Living</h1>
-    <form method="GET" style="margin:1rem 0; display:flex; gap:.5rem;">
+    <form method="GET" action="https://www.google.com/search" target="_blank" style="margin:1rem 0; display:flex; gap:.5rem;">
         <input type="text" name="q" value="<?php echo sanitize($q); ?>" placeholder="Breathing exercises for stress, mindful routines, youth wellness" style="flex:1; padding:.75rem;">
+        <input type="hidden" name="hl" value="en">
         <button class="btn btn-primary" type="submit">Search</button>
     </form>
     <?php if ($error): ?>
         <div class="alert error"><?php echo sanitize($error); ?></div>
     <?php endif; ?>
-    <?php if ($q !== '' && empty($error)): ?>
+    <?php if ($q !== '' && empty($error) && GOOGLE_API_KEY && GOOGLE_CX): ?>
         <div style="margin:.5rem 0; color: var(--muted);">Results for "<?php echo sanitize($q); ?>"</div>
         <ul style="list-style:none; padding:0; display:grid; gap:1rem;">
             <?php foreach ($results as $r): ?>

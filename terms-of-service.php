@@ -63,13 +63,13 @@
                 <h1>Terms of Service</h1>
                 <p class="last-updated">Last Updated: <?php echo date('F d, Y'); ?></p>
                 
-                <p>Welcome to Freedom Path. By accessing or using our platform, you agree to be bound by these Terms of Service. Please read them carefully.</p>
+                <p>Welcome to <?php echo SITE_NAME; ?>. By accessing or using our platform, you agree to be bound by these Terms of Service. Please read them carefully.</p>
                 
                 <h2>1. Acceptance of Terms</h2>
                 <p>By creating an account or using our services, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree, please do not use our platform.</p>
                 
                 <h2>2. Description of Service</h2>
-                <p>Freedom Path provides:</p>
+                <p><?php echo SITE_NAME; ?> provides:</p>
                 <ul>
                     <li>Access to licensed psychiatrists and mental health professionals</li>
                     <li>Anonymous messaging and consultation services</li>
@@ -131,7 +131,7 @@
                 </ul>
                 
                 <h2>6. Medical Disclaimer</h2>
-                <p><strong>IMPORTANT:</strong> Freedom Path is a platform that connects users with licensed mental health professionals. However:</p>
+                <p><strong>IMPORTANT:</strong> <?php echo SITE_NAME; ?> is a platform that connects users with licensed mental health professionals. However:</p>
                 <ul>
                     <li>Our platform does NOT provide emergency services</li>
                     <li>In case of emergency, call local emergency services immediately</li>
@@ -159,14 +159,14 @@
                 </ul>
                 
                 <h2>8. Intellectual Property</h2>
-                <p>All content on Freedom Path, including:</p>
+                <p>All content on <?php echo SITE_NAME; ?>, including:</p>
                 <ul>
                     <li>Text, graphics, logos, and images</li>
                     <li>Software and platform functionality</li>
                     <li>Educational resources and materials</li>
                     <li>Design and layout</li>
                 </ul>
-                <p>Are owned by or licensed to Freedom Path and protected by intellectual property laws. You may not copy, reproduce, or distribute our content without permission.</p>
+                <p>Are owned by or licensed to <?php echo SITE_NAME; ?> and protected by intellectual property laws. You may not copy, reproduce, or distribute our content without permission.</p>
                 
                 <h2>9. User-Generated Content</h2>
                 <p>When you submit content (messages, forms, assessments):</p>
@@ -215,7 +215,7 @@
                 </ul>
                 
                 <h3>12.2 Limitation of Liability</h3>
-                <p>To the maximum extent permitted by law, Freedom Path shall not be liable for:</p>
+                <p>To the maximum extent permitted by law, <?php echo SITE_NAME; ?> shall not be liable for:</p>
                 <ul>
                     <li>Indirect, incidental, or consequential damages</li>
                     <li>Loss of data or profits</li>
@@ -224,7 +224,7 @@
                 </ul>
                 
                 <h2>13. Indemnification</h2>
-                <p>You agree to indemnify and hold harmless Freedom Path from any claims, damages, or expenses arising from:</p>
+                <p>You agree to indemnify and hold harmless <?php echo SITE_NAME; ?> from any claims, damages, or expenses arising from:</p>
                 <ul>
                     <li>Your use of the platform</li>
                     <li>Your violation of these Terms</li>
@@ -252,7 +252,7 @@
                 
                 <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--border);">
                     <p style="text-align: center; color: var(--text-light); font-weight: 600;">
-                        By using Freedom Path, you acknowledge that you have read, understood, and agree to these Terms of Service.
+                        By using <?php echo SITE_NAME; ?>, you acknowledge that you have read, understood, and agree to these Terms of Service.
                     </p>
                 </div>
             </div>

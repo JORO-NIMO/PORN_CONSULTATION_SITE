@@ -1,4 +1,4 @@
-<footer style="background: white; padding: 3rem 0; margin-top: 4rem; box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);">
+<footer style="background: white; padding: 2rem 0; margin-top: 2rem; box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);">
     <div class="container">
         <!-- Partners Section -->
         <div style="margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
@@ -35,9 +35,9 @@
                 </div>
             </div>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 0.5rem;">
             <div>
-                <h3 style="color: var(--primary); margin-bottom: 1rem;">Freedom Path</h3>
+                <h3 style="color: var(--primary); margin-bottom: 1rem;"><?php echo SITE_NAME; ?></h3>
                 <p style="color: var(--text-light);">Supporting individuals on their journey to freedom from pornography addiction through professional help, education, and community.</p>
             </div>
             <div>
@@ -59,8 +59,8 @@
                 </p>
             </div>
         </div>
-        <div style="text-align: center; padding-top: 2rem; border-top: 1px solid var(--border); color: var(--text-light);">
-            <p>&copy; <?php echo date('Y'); ?> Freedom Path. All rights reserved. | <a href="privacy-policy.php" style="color: var(--primary); text-decoration: none; transition: all 0.3s ease;">Privacy Policy</a> | <a href="terms-of-service.php" style="color: var(--primary); text-decoration: none; transition: all 0.3s ease;">Terms of Service</a></p>
+        <div style="text-align: center; padding-top: 0.5rem; border-top: 1px solid var(--border); color: var(--text-light); font-size: 0.875rem;">
+            <p>&copy; <?php echo date('Y'); ?> <?php echo SITE_NAME; ?>. All rights reserved. | <a href="privacy-policy.php" style="color: var(--primary); text-decoration: none; transition: all 0.3s ease;">Privacy Policy</a> | <a href="terms-of-service.php" style="color: var(--primary); text-decoration: none; transition: all 0.3s ease;">Terms of Service</a></p>
         </div>
     </div>
 </footer>
@@ -76,7 +76,7 @@
 .partners-track {
     display: flex;
     gap: 2rem;
-    animation: slidePartners 20s linear infinite;
+    animation: slidePartners 40s linear infinite;
 }
 
 .partner-item {
@@ -111,10 +111,10 @@
 
 @keyframes slidePartners {
     0% {
-        transform: translateX(0);
+        transform: translateX(100%);
     }
     100% {
-        transform: translateX(calc(-120px * 6 - 2rem * 6));
+        transform: translateX(calc(-120px * 12 - 2rem * 12));
     }
 }
 

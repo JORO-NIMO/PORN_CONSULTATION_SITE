@@ -60,6 +60,8 @@ header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
 }
 
 .logo {
@@ -67,12 +69,26 @@ header {
     font-weight: bold;
     color: var(--primary);
     text-decoration: none;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 nav ul {
     list-style: none;
     display: flex;
     gap: 2rem;
+}
+
+.header-content > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.header-content > div:first-child > div {
+    white-space: nowrap;
 }
 
 nav a {
@@ -219,6 +235,12 @@ nav a:hover {
     background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary) 100%);
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
+}
+.on-blue, .on-blue * {
+    color: #fff !important;
+}
+.hero *, .stats-section *, .cta-section *, .action-card *, .avatar-placeholder *, .content-type-badge {
+    color: #fff;
 }
 
 .btn-block {

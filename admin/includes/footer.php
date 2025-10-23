@@ -3,7 +3,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-md-6 text-muted">
-                &copy; <?php echo date('Y'); ?> Freedom Path. All rights reserved.
+                &copy; <?php echo date('Y'); ?> <?php echo SITE_NAME; ?>. All rights reserved.
             </div>
             <div class="col-md-6 text-md-end">
                 <span class="text-muted">

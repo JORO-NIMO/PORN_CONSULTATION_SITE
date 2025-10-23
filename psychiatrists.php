@@ -8,6 +8,16 @@ $db = Database::getInstance();
 $psychiatrists = $db->fetchAll(
     "SELECT * FROM psychiatrists WHERE is_active = 1 ORDER BY rating DESC, total_consultations DESC"
 );
+// Deduplicate by name (case-insensitive, trimmed)
+$seen = [];
+$uniquePsychiatrists = [];
+foreach ($psychiatrists as $p) {
+    $key = strtolower(trim($p['name'] ?? ''));
+    if ($key === '') { $key = (string)($p['id'] ?? uniqid('psy_')); }
+    if (isset($seen[$key])) { continue; }
+    $seen[$key] = true;
+    $uniquePsychiatrists[] = $p;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -28,7 +38,7 @@ $psychiatrists = $db->fetchAll(
             </div>
             
             <div class="psychiatrists-grid">
-                <?php foreach ($psychiatrists as $psych): ?>
+                <?php foreach ($uniquePsychiatrists as $psych): ?>
                 <div class="psychiatrist-card">
                     <div class="psychiatrist-header">
                         <div class="psychiatrist-avatar">

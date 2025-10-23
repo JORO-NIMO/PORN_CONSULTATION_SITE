@@ -21,7 +21,7 @@ $successRate = $totalConsultations > 0 ? round(($totalConsultations / max($total
             background: linear-gradient(135deg, rgba(99, 102, 241, 0.95) 0%, rgba(139, 92, 246, 0.95) 50%, rgba(6, 182, 212, 0.95) 100%),
                         url('bg.png') center/cover;
             color: white;
-            padding: 6rem 2rem;
+            padding: 3.5rem 2rem;
             text-align: center;
             box-shadow: 0 10px 40px rgba(99, 102, 241, 0.3);
         }
@@ -142,7 +142,7 @@ $successRate = $totalConsultations > 0 ? round(($totalConsultations / max($total
             <h1>🌟 Nurturing Mental Wellness for Youth and Parents</h1>
             <p><?php echo SITE_TAGLINE; ?>. Access trusted guidance, caring professionals, and practical tools.</p>
             <div class="hero-buttons">
-                <a href="auth/register.php" class="btn btn-primary" style="background: white; color: var(--primary);">Join Mind Doctor</a>
+                <a href="auth/register.php" class="btn btn-primary" style="background: white; color: var(--primary);">Join <?php echo SITE_NAME; ?></a>
                 <a href="exercises.php" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white;">Try Breathing Exercises</a>
             </div>
         </div>
@@ -270,7 +270,7 @@ $successRate = $totalConsultations > 0 ? round(($totalConsultations / max($total
     .partners-track {
         display: flex;
         gap: 4rem;
-        animation: slidePartners 20s linear infinite;
+        animation: slidePartners 40s linear infinite;
     }
     
     .partner-item {
@@ -305,10 +305,10 @@ $successRate = $totalConsultations > 0 ? round(($totalConsultations / max($total
     
     @keyframes slidePartners {
         0% {
-            transform: translateX(0);
+            transform: translateX(100%);
         }
         100% {
-            transform: translateX(calc(-200px * 6 - 4rem * 6));
+            transform: translateX(calc(-200px * 12 - 4rem * 12));
         }
     }
     

@@ -6,6 +6,8 @@
  * and displays a user-friendly message while logging the error.
  */
 
+require_once __DIR__ . '/config/config.php';
+
 // Security headers
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
@@ -52,7 +54,7 @@ error_log(sprintf(
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Error <?php echo $errorCode; ?> - Freedom Path</title>
+    <title>Error <?php echo $errorCode; ?> - <?php echo SITE_NAME; ?></title>
     <style>
         :root {
             --primary-color: #3a86ff;
@@ -190,7 +192,7 @@ error_log(sprintf(
     </div>
     
     <footer class="footer">
-        <p>&copy; <?php echo date('Y'); ?> Freedom Path. All rights reserved.</p>
+        <p>&copy; <?php echo date('Y'); ?> <?php echo SITE_NAME; ?>. All rights reserved.</p>
     </footer>
 </body>
 </html>

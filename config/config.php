@@ -1,6 +1,41 @@
 <?php
 // Application configuration
-session_start();
+if (session_status() !== PHP_SESSION_ACTIVE) {
+    $isHttps = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (($_SERVER['SERVER_PORT'] ?? null) == 443);
+    $cookieParams = [
+        'lifetime' => 3600 * 24,
+        'path' => '/',
+        'domain' => '',
+        'secure' => $isHttps,
+        'httponly' => true,
+        'samesite' => 'Lax'
+    ];
+    if (PHP_VERSION_ID >= 70300) {
+        session_set_cookie_params($cookieParams);
+    } else {
+        session_set_cookie_params($cookieParams['lifetime'], $cookieParams['path'] . '; samesite=' . $cookieParams['samesite'], $cookieParams['domain'], $cookieParams['secure'], $cookieParams['httponly']);
+    }
+    ini_set('session.use_strict_mode', '1');
+    ini_set('session.use_only_cookies', '1');
+    session_start();
+    if (!isset($_SESSION['initiated'])) {
+        session_regenerate_id(true);
+        $_SESSION['initiated'] = time();
+        $_SESSION['fingerprint'] = hash('sha256', ($_SERVER['HTTP_USER_AGENT'] ?? '') . '|' . substr($_SERVER['REMOTE_ADDR'] ?? '', 0, 7));
+    } else {
+        $fp = hash('sha256', ($_SERVER['HTTP_USER_AGENT'] ?? '') . '|' . substr($_SERVER['REMOTE_ADDR'] ?? '', 0, 7));
+        if (!isset($_SESSION['fingerprint']) || $_SESSION['fingerprint'] !== $fp) {
+            $_SESSION = [];
+            if (ini_get('session.use_cookies')) {
+                $p = session_get_cookie_params();
+                setcookie(session_name(), '', time() - 42000, $p['path'], $p['domain'], $p['secure'], $p['httponly']);
+            }
+            session_destroy();
+            header('Location: /auth/login.php?expired=1');
+            exit;
+        }
+    }
+}
 
 // Security settings
 define('SITE_KEY', bin2hex(random_bytes(32))); // Generate unique key for CSRF
@@ -8,7 +43,7 @@ define('SESSION_LIFETIME', 3600 * 24); // 24 hours
 define('BCRYPT_COST', 12);
 
 // Site settings
-define('SITE_NAME', 'Mind Doctor');
+define('SITE_NAME', 'Mental Freedom Path');
 define('SITE_TAGLINE', 'Breaking the stigma to help parents raise resilient youth');
 define('SITE_URL', 'http://localhost/consultation_site');
 define('ADMIN_EMAIL', 'joronimoamanya@gmail.com');
@@ -63,6 +98,17 @@ function requireLogin() {
         header('Location: /auth/login.php');
         exit;
     }
+    if (isset($_SESSION['last_activity']) && (time() - (int)$_SESSION['last_activity'] > SESSION_LIFETIME)) {
+        $_SESSION = [];
+        if (ini_get('session.use_cookies')) {
+            $p = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000, $p['path'], $p['domain'], $p['secure'], $p['httponly']);
+        }
+        session_destroy();
+        header('Location: /auth/login.php?expired=1');
+        exit;
+    }
+    $_SESSION['last_activity'] = time();
 }
 
 function generateCSRFToken() {
@@ -111,7 +157,8 @@ function isAdmin($userId = null) {
 }
 
 function requireAdmin() {
-    if (!isLoggedIn() || !isAdmin()) {
+    requireLogin();
+    if (!isAdmin()) {
         header('Location: /auth/login.php');
         exit;
     }

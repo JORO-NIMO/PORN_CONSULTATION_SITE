@@ -63,7 +63,7 @@
                 <h1>Privacy Policy</h1>
                 <p class="last-updated">Last Updated: <?php echo date('F d, Y'); ?></p>
                 
-                <p>At Freedom Path, we are committed to protecting your privacy and ensuring the confidentiality of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform.</p>
+                <p>At <?php echo SITE_NAME; ?>, we are committed to protecting your privacy and ensuring the confidentiality of your personal information. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform.</p>
                 
                 <h2>1. Information We Collect</h2>
                 
@@ -186,7 +186,7 @@
                 
                 <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid var(--border);">
                     <p style="text-align: center; color: var(--text-light);">
-                        By using Freedom Path, you acknowledge that you have read and understood this Privacy Policy.
+                        By using <?php echo SITE_NAME; ?>, you acknowledge that you have read and understood this Privacy Policy.
                     </p>
                 </div>
             </div>

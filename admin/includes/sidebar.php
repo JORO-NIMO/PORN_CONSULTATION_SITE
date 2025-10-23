@@ -107,7 +107,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                     <img src="/assets/img/logo-icon.png" alt="Logo" width="30" height="30" class="rounded-circle">
                 </div>
                 <div class="flex-grow-1 ms-3">
-                    <div class="fw-bold">Freedom Path</div>
+                    <div class="fw-bold"><?php echo SITE_NAME; ?></div>
                     <small class="text-muted">v1.0.0</small>
                 </div>
             </div>

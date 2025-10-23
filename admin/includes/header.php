@@ -17,10 +17,10 @@ $unreadCount = getUnreadNotificationCount($_SESSION['user_id']);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Freedom Path Admin Panel">
-    <meta name="author" content="Freedom Path">
+    <meta name="description" content="<?php echo SITE_NAME; ?> Admin Panel">
+    <meta name="author" content="<?php echo SITE_NAME; ?>">
     
-    <title><?php echo isset($pageTitle) ? $pageTitle . ' - ' : ''; ?>Freedom Path Admin</title>
+    <title><?php echo isset($pageTitle) ? $pageTitle . ' - ' : ''; ?><?php echo SITE_NAME; ?> Admin</title>
     
     <!-- Favicon -->
     <link rel="icon" href="/assets/img/favicon.ico">
@@ -137,7 +137,7 @@ $unreadCount = getUnreadNotificationCount($_SESSION['user_id']);
 </head>
 <body>
     <header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/admin/">Freedom Path Admin</a>
+        <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="/admin/"><?php echo SITE_NAME; ?> Admin</a>
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>

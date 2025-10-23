@@ -1,6 +1,6 @@
 @echo off
 echo ========================================
-echo Freedom Path - Portable Server Launcher
+echo Mental Freedom Path - Portable Server Launcher
 echo ========================================
 echo.
 
