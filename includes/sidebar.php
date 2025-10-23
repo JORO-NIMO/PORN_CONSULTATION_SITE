@@ -15,7 +15,6 @@ if (!function_exists('isLoggedIn')) {
                 <li><a href="exercises.php">Exercises</a></li>
                 <li><a href="discussions.php">Discussions</a></li>
                 <li><a href="practitioners.php">Practitioners</a></li>
-                <li><a href="uploads.php">Uploads</a></li>
                 <li><a href="profile.php">Profile</a></li>
                 <li><a href="testimonials.php">Stories</a></li>
                 <li><a href="auth/logout.php">Logout</a></li>

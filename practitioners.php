@@ -1,14 +1,23 @@
 <?php
 require_once 'config/config.php';
-include 'includes/header.php';
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Practitioners - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<?php include 'includes/header.php'; ?>
 <section class="page-hero">
     <div class="container">
         <h1>Practitioners</h1>
         <p class="subtitle">Connect with verified helpers</p>
     </div>
 </section>
-<main class="container" style="padding:1.25rem 1rem;">
+<main class="container practitioners-page" style="padding:1.25rem 1rem;">
     <div class="content-grid">
         <?php
         $practitioners = [
@@ -33,3 +42,5 @@ include 'includes/header.php';
     </div>
 </main>
 <?php include 'includes/footer.php'; ?>
+</body>
+</html>

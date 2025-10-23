@@ -21,7 +21,7 @@
                 <?php echo SITE_TAGLINE; ?>
             </div>
         </div>
-        <button id="sidebarToggle" class="sidebar-toggle" aria-label="Toggle menu">☰ Menu</button>
+        
     </div>
 </header>
 
@@ -29,18 +29,3 @@
     <?php include __DIR__ . '/sidebar.php'; ?>
     <div class="app-main">
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  try {
-    var pref = localStorage.getItem('sidebarCollapsed');
-    if (pref === '1') { document.body.classList.add('sidebar-collapsed'); }
-  } catch (e) {}
-  var btn = document.getElementById('sidebarToggle');
-  if (btn) {
-    btn.addEventListener('click', function() {
-      document.body.classList.toggle('sidebar-collapsed');
-      try { localStorage.setItem('sidebarCollapsed', document.body.classList.contains('sidebar-collapsed') ? '1' : '0'); } catch (e) {}
-    });
-  }
-});
-</script>

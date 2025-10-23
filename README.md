@@ -1,26 +1,30 @@
-# Freedom Path - Anti-Pornography Campaign Platform
+# Mental Freedom Path — Wellness Platform
 
 A comprehensive web platform designed to support individuals struggling with pornography addiction through professional psychiatric help, anonymous messaging, educational resources, and community support. Integrated with X (formerly Twitter) for real-time recovery content and community engagement.
 
 ## 🌟 Features
 
 ### Core Functionality
-- **User Authentication**: Secure registration and login with bcrypt password hashing
+- **Global Sidebar Navigation**: Consistent, collapsible sidebar with saved user preference
+- **User Authentication**: Secure registration and login with bcrypt hashing
 - **Psychiatrist Directory**: Browse and connect with specialized mental health professionals
 - **Anonymous Messaging**: Safe, confidential communication system
-- **Video Consultations**: WebRTC-based anonymous video calling with psychiatrists
-- **Dynamic Form Builder**: Create and share customizable assessment forms
-- **Educational Content**: Curated resources about pornography effects and recovery
-- **Automated Content Scraping**: Web scraper for educational content from reputable sources
-- **X (Twitter) Integration**: Real-time recovery content from the X platform
-- **Progress Tracking**: Monitor recovery journey with custom forms
+- **Video Consultations**: WebRTC-ready anonymous video calling
+- **Educational Content**: Curated resources about recovery and mental wellness
+- **Exercises**: Breathing, grounding, relaxation, stretching
+- **Discussions**: Lightweight topics stored locally on device
+- **Practitioners**: Sample helper directory
+- **Search**: Google GET interface (no API key)
+- **Content Scraping (optional)**: Web scraper for educational content from reputable sources
 
 ### Security Features
 - Password hashing with bcrypt (cost factor 12)
 - CSRF token protection
 - XSS prevention through input sanitization
 - SQL injection protection with prepared statements
-- Secure session management
+- Secure session management: strict mode, cookies-only, HttpOnly + SameSite=Lax cookies (Secure on HTTPS)
+- Session hardening: fingerprint (UA + partial IP), idle timeout, session ID rotation every 15 minutes
+- Baseline headers: X-Content-Type-Options, X-Frame-Options, Referrer-Policy
 - Rate limiting on login attempts
 - Anonymous video calling (identity protection)
 
@@ -32,6 +36,18 @@ A comprehensive web platform designed to support individuals struggling with por
 - Animated educational slideshow
 - Mobile-friendly interface
 - High-quality graphics and UI
+
+## What's New (Oct 2025)
+- Global, adjustable sidebar on every page (header links removed). Preference persists per user.
+- New pages added and styled with the shared CSS:
+  - `exercises.php` (breathing, grounding, relaxation, stretching)
+  - `discussions.php` (lightweight topics stored locally)
+  - `practitioners.php` (sample helper directory)
+- Uploads feature disabled; `uploads.php` now redirects to `dashboard.php` and the sidebar link was removed.
+- Profile management enhanced:
+  - Update full name and email with uniqueness checks
+  - Change password with current-password verification and bcrypt hashing
+- All pages reference the single shared stylesheet `assets/css/style.css` with consistent HTML skeleton.
 
 ## 🛠️ Technology Stack
 
@@ -137,7 +153,7 @@ See **[PORTABLE_SETUP.md](PORTABLE_SETUP.md)** for:
 consultation_site/
 ├── assets/
 │   ├── css/
-│   │   └── style.css          # Main stylesheet
+│   │   └── style.css          # Main stylesheet (shared by all pages)
 │   └── js/
 │       ├── main.js             # Core JavaScript
 │       ├── auth.js             # Authentication
@@ -155,6 +171,7 @@ consultation_site/
 │   └── setup.sql               # Database schema
 ├── includes/
 │   ├── header.php              # Site header
+│   ├── sidebar.php             # Global sidebar navigation
 │   └── footer.php              # Site footer
 ├── scraper/
 │   └── content-scraper.php     # Web scraping tool
@@ -163,8 +180,14 @@ consultation_site/
 ├── psychiatrists.php           # Psychiatrist directory
 ├── messages.php                # Anonymous messaging
 ├── education.php               # Educational resources
-├── forms.php                   # Form builder & library
+├── search.php                  # Google search (no API key)
+├── exercises.php               # Stress-relief exercises
+├── discussions.php             # Lightweight topics (local device)
+├── practitioners.php           # Sample helper directory
+├── profile.php                 # Profile management
 ├── video-call.php              # Video consultation
+├── forms.php                   # Deprecated (legacy)
+├── uploads.php                 # Disabled (redirects to dashboard)
 └── README.md                   # This file
 ```
 

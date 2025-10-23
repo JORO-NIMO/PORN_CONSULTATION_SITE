@@ -1,15 +1,24 @@
 <?php
 require_once 'config/config.php';
 requireLogin();
-include 'includes/header.php';
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussions - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<?php include 'includes/header.php'; ?>
 <section class="page-hero">
     <div class="container">
         <h1>Discussions</h1>
         <p class="subtitle">Share insights and support</p>
     </div>
 </section>
-<main class="container" style="padding:1.25rem 1rem;">
+<main class="container discussions-page" style="padding:1.25rem 1rem;">
     <div style="max-width:720px;margin:0 auto;">
         <form id="newTopic" method="POST" style="display:grid;gap:.5rem;margin-bottom:1rem;">
             <input type="text" id="topicTitle" placeholder="Topic title" required style="padding:.75rem;">
@@ -49,3 +58,5 @@ include 'includes/header.php';
  load();
 })();
 </script>
+</body>
+</html>

@@ -1,14 +1,23 @@
 <?php
 require_once 'config/config.php';
-include 'includes/header.php';
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercises - <?php echo SITE_NAME; ?></title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+<?php include 'includes/header.php'; ?>
 <section class="page-hero">
     <div class="container">
         <h1>Exercises</h1>
         <p class="subtitle">Simple practices to relax and refocus</p>
     </div>
 </section>
-<main class="container" style="padding:1.25rem 1rem;">
+<main class="container exercises-page" style="padding:1.25rem 1rem;">
     <div class="content-grid">
         <div class="content-card" style="text-align:center;">
             <h3>Box Breathing</h3>
@@ -72,3 +81,5 @@ include 'includes/header.php';
  document.getElementById('breathStop').onclick=function(){ if(timer){ clearTimeout(timer); timer=null; } label.textContent='Ready'; circle.style.transform='scale(1)'; };
 })();
 </script>
+</body>
+</html>

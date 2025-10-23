@@ -1,5 +1,7 @@
 # Partner Logos Directory
 
+> Note: The partners section on the homepage is disabled by default. You can still keep partner logo assets here for future use or re-enable the section as needed.
+
 ## How to Add Partner Logos
 
 1. **Image Requirements:**

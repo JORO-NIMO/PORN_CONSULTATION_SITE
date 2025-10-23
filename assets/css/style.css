@@ -16,6 +16,7 @@
     --border: #e0e7ff;
     --text: #334155;
     --text-light: #64748b;
+    --muted: #6b7280;
     --error: #f43f5e;
     --shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.1), 0 2px 4px -1px rgba(99, 102, 241, 0.06);
     --shadow-lg: 0 10px 15px -3px rgba(99, 102, 241, 0.15), 0 4px 6px -2px rgba(99, 102, 241, 0.1);
@@ -136,8 +137,6 @@ nav a:hover {
 .side-nav a { display: block; padding: 0.6rem 0.75rem; border-radius: 8px; text-decoration: none; color: var(--text); transition: var(--transition); }
 .side-nav a:hover { background: #f5f3ff; color: var(--primary); }
 
-.sidebar-toggle { background: none; border: 1px solid var(--border); padding: .35rem .6rem; border-radius: 8px; cursor: pointer; color: var(--text); }
-.sidebar-toggle:hover { border-color: var(--primary); color: var(--primary); }
 
 /* Collapsed behavior - user adjustable */
 .sidebar-collapsed .app-layout { grid-template-columns: 0 1fr; }
@@ -475,6 +474,44 @@ nav a:hover {
     justify-content: space-between;
     align-items: center;
 }
+
+/* Content List (e.g., Discussions topics) */
+.content-list { display: grid; gap: 1rem; }
+.content-list-item {
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    transition: var(--transition);
+}
+.content-list-item:hover {
+    border-color: var(--primary);
+    box-shadow: var(--shadow);
+    transform: translateY(-3px);
+}
+
+/* Exercises Page */
+.exercises-page .content-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.exercises-page .content-card h3 { color: var(--dark); margin-bottom: .5rem; }
+#breathCircle { box-shadow: var(--shadow-lg); outline: 8px solid rgba(99,102,241,0.08); }
+#breathStep { font-weight: 600; color: var(--text-light); }
+
+/* Discussions Page */
+.discussions-page #newTopic { background: #fff; border: 2px solid var(--border); border-radius: 12px; padding: 1rem; box-shadow: var(--shadow); }
+.discussions-page #newTopic input,
+.discussions-page #newTopic textarea { border: 2px solid var(--border); border-radius: 8px; }
+.discussions-page #newTopic input:focus,
+.discussions-page #newTopic textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(99,102,241,0.15); outline: none; }
+.discussions-page .content-list-item h3 { color: var(--dark); margin-bottom: .25rem; }
+.discussions-page .content-list-item p { color: var(--text-light); }
+
+/* Practitioners Page */
+.practitioners-page .content-card { box-shadow: var(--shadow); }
+.practitioners-page .content-card:hover { box-shadow: var(--shadow-lg); }
+.practitioners-page .content-card img { box-shadow: 0 0 0 3px #eef2ff, 0 8px 14px rgba(99,102,241,.12); }
+.practitioners-page .content-card .avatar-placeholder { background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%); color: #4f46e5; box-shadow: 0 0 0 3px #eef2ff, 0 8px 14px rgba(99,102,241,.12); }
+.practitioners-page .content-card h3 { color: var(--dark); }
+.practitioners-page .content-card div { color: var(--text-light); }
 
 /* Actions Grid */
 .actions-grid {

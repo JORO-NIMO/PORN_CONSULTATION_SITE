@@ -2,6 +2,8 @@
 require_once __DIR__ . '/config/config.php';
 requireLogin();
 $db = Database::getInstance();
+header('Location: dashboard.php');
+exit;
 $user = getCurrentUser();
 $errors = [];
 $success = '';
