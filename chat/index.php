@@ -6,6 +6,9 @@
 require_once __DIR__ . '/../config/config.php';
 requireLogin();
 
+// Initialize database connection
+$db = Database::getInstance();
+
 $pageTitle = 'Support Chat';
 $currentUser = getCurrentUser();
 

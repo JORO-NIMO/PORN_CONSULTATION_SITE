@@ -14,7 +14,7 @@ $successRate = $totalConsultations > 0 ? round(($totalConsultations / max($total
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Freedom Path - Break Free from Pornography Addiction</title>
+    <title><?php echo SITE_NAME; ?> — <?php echo SITE_TAGLINE; ?></title>
     <link rel="stylesheet" href="assets/css/style.css">
     <style>
         .hero {
@@ -139,11 +139,11 @@ $successRate = $totalConsultations > 0 ? round(($totalConsultations / max($total
     
     <section class="hero">
         <div class="container">
-            <h1>🌟 Break Free from Pornography Addiction</h1>
-            <p>Your journey to freedom starts here. Get professional support, education, and community.</p>
+            <h1>🌟 Nurturing Mental Wellness for Youth and Parents</h1>
+            <p><?php echo SITE_TAGLINE; ?>. Access trusted guidance, caring professionals, and practical tools.</p>
             <div class="hero-buttons">
-                <a href="auth/register.php" class="btn btn-primary" style="background: white; color: var(--primary);">Get Started Free</a>
-                <a href="education.php" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white;">Learn More</a>
+                <a href="auth/register.php" class="btn btn-primary" style="background: white; color: var(--primary);">Join Mind Doctor</a>
+                <a href="exercises.php" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white;">Try Breathing Exercises</a>
             </div>
         </div>
     </section>

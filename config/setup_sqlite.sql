@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
     last_login TEXT
 );
 
-CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 
 -- Psychiatrists table
 CREATE TABLE IF NOT EXISTS psychiatrists (
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS psychiatrists (
     created_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_psychiatrists_active ON psychiatrists(is_active);
+CREATE INDEX IF NOT EXISTS idx_psychiatrists_active ON psychiatrists(is_active);
 
 -- Form templates table
 CREATE TABLE IF NOT EXISTS form_templates (
@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS form_templates (
     FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL
 );
 
-CREATE INDEX idx_form_templates_token ON form_templates(share_token);
+CREATE INDEX IF NOT EXISTS idx_form_templates_token ON form_templates(share_token);
 
 -- Form submissions table
 CREATE TABLE IF NOT EXISTS form_submissions (
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS form_submissions (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
-CREATE INDEX idx_form_submissions_form ON form_submissions(form_id);
+CREATE INDEX IF NOT EXISTS idx_form_submissions_form ON form_submissions(form_id);
 
 -- Messages table (anonymous messaging)
 CREATE TABLE IF NOT EXISTS messages (
@@ -80,9 +80,9 @@ CREATE TABLE IF NOT EXISTS messages (
     FOREIGN KEY (parent_id) REFERENCES messages(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_messages_sender ON messages(sender_id);
-CREATE INDEX idx_messages_recipient ON messages(recipient_id);
-CREATE INDEX idx_messages_psychiatrist ON messages(psychiatrist_id);
+CREATE INDEX IF NOT EXISTS idx_messages_sender ON messages(sender_id);
+CREATE INDEX IF NOT EXISTS idx_messages_recipient ON messages(recipient_id);
+CREATE INDEX IF NOT EXISTS idx_messages_psychiatrist ON messages(psychiatrist_id);
 
 -- Consultations table
 CREATE TABLE IF NOT EXISTS consultations (
@@ -99,9 +99,9 @@ CREATE TABLE IF NOT EXISTS consultations (
     FOREIGN KEY (psychiatrist_id) REFERENCES psychiatrists(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_consultations_user ON consultations(user_id);
-CREATE INDEX idx_consultations_psychiatrist ON consultations(psychiatrist_id);
-CREATE INDEX idx_consultations_status ON consultations(status);
+CREATE INDEX IF NOT EXISTS idx_consultations_user ON consultations(user_id);
+CREATE INDEX IF NOT EXISTS idx_consultations_psychiatrist ON consultations(psychiatrist_id);
+CREATE INDEX IF NOT EXISTS idx_consultations_status ON consultations(status);
 
 -- Educational content table
 CREATE TABLE IF NOT EXISTS educational_content (
@@ -119,8 +119,8 @@ CREATE TABLE IF NOT EXISTS educational_content (
     updated_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_educational_content_type ON educational_content(content_type);
-CREATE INDEX idx_educational_content_featured ON educational_content(is_featured);
+CREATE INDEX IF NOT EXISTS idx_educational_content_type ON educational_content(content_type);
+CREATE INDEX IF NOT EXISTS idx_educational_content_featured ON educational_content(is_featured);
 
 -- Video call sessions table
 CREATE TABLE IF NOT EXISTS video_sessions (
@@ -136,7 +136,7 @@ CREATE TABLE IF NOT EXISTS video_sessions (
     FOREIGN KEY (consultation_id) REFERENCES consultations(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_video_sessions_room ON video_sessions(room_id);
+CREATE INDEX IF NOT EXISTS idx_video_sessions_room ON video_sessions(room_id);
 
 -- Sessions table for user authentication
 CREATE TABLE IF NOT EXISTS sessions (
@@ -149,8 +149,8 @@ CREATE TABLE IF NOT EXISTS sessions (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_sessions_user ON sessions(user_id);
-CREATE INDEX idx_sessions_expires ON sessions(expires_at);
+CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id);
+CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at);
 
 -- Insert sample psychiatrists
 INSERT INTO psychiatrists (name, specialization, bio, qualifications, experience_years, email, phone, availability, rating, is_active) VALUES

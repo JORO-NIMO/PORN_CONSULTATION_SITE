@@ -3,7 +3,7 @@
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: DENY');
 header('X-XSS-Protection: 1; mode=block');
-header('Content-Security-Policy: default-src \'self\'; script-src \'self\' https://*.x.com; style-src \'self\' 'unsafe-inline'; img-src \'self\' data: https:; font-src \'self\' data:;');
+header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' ws: wss: https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';");
 
 // Disable error display in production
 if (!defined('ENVIRONMENT')) {
@@ -30,6 +30,8 @@ class Database {
                     PDO::ATTR_EMULATE_PREPARES => false,
                 ]
             );
+            // Enforce foreign key constraints in SQLite
+            $this->pdo->exec('PRAGMA foreign_keys = ON;');
         } catch (PDOException $e) {
             error_log('Database connection failed: ' . $e->getMessage());
             if (ENVIRONMENT === 'development') {
@@ -70,6 +72,11 @@ class Database {
         return $this->pdo->lastInsertId();
     }
     
+    // Execute a non-prepared SQL statement (DDL or bulk SQL)
+    public function exec($sql) {
+        return $this->pdo->exec($sql);
+    }
+    
     public function beginTransaction() {
         return $this->pdo->beginTransaction();
     }
@@ -104,65 +111,4 @@ if (!file_exists(dirname(DB_FILE))) {
 if (file_exists(DB_FILE)) {
     chmod(DB_FILE, 0644);
 }
-            $dataDir = dirname(DB_FILE);
-            if (!is_dir($dataDir)) {
-                mkdir($dataDir, 0755, true);
-            }
-            
-            // Check if database needs to be created
-            $needsSetup = !file_exists(DB_FILE);
-            
-            $dsn = "sqlite:" . DB_FILE;
-            $options = [
-                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                PDO::ATTR_EMULATE_PREPARES => false,
-            ];
-            $this->conn = new PDO($dsn, null, null, $options);
-            
-            // Enable foreign keys for SQLite
-            $this->conn->exec('PRAGMA foreign_keys = ON;');
-            
-            // Initialize database if needed
-            if ($needsSetup) {
-                $this->setupDatabase();
-            }
-        } catch(PDOException $e) {
-            die("Connection failed: " . $e->getMessage());
-        }
-    }
-    
-    public static function getInstance() {
-        if (self::$instance === null) {
-            self::$instance = new self();
-        }
-        return self::$instance;
-    }
-    
-    public function getConnection() {
-        return $this->conn;
-    }
-    
-    public function query($sql, $params = []) {
-        $stmt = $this->conn->prepare($sql);
-        $stmt->execute($params);
-        return $stmt;
-    }
-    
-    public function fetchAll($sql, $params = []) {
-        return $this->query($sql, $params)->fetchAll();
-    }
-    
-    public function fetchOne($sql, $params = []) {
-        return $this->query($sql, $params)->fetch();
-    }
-    
-    public function lastInsertId() {
-        return $this->conn->lastInsertId();
-    }
-    
-    private function setupDatabase() {
-        $sql = file_get_contents(__DIR__ . '/setup_sqlite.sql');
-        $this->conn->exec($sql);
-    }
-}
+ 

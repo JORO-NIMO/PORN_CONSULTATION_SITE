@@ -15,6 +15,13 @@ try {
     // Begin transaction
     $db->beginTransaction();
 
+    // Ensure base schema exists (users, consultations, educational_content, etc.)
+    // This will create base tables if they are missing. Safe to run once.
+    $schemaSql = file_get_contents(__DIR__ . '/../config/setup_sqlite.sql');
+    if ($schemaSql !== false) {
+        $db->exec($schemaSql);
+    }
+
     // 1. Chat Messages Table
     $db->exec("CREATE TABLE IF NOT EXISTS chat_messages (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -40,7 +47,7 @@ try {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title VARCHAR(255) NOT NULL,
         description TEXT,
-        content_type ENUM('video', 'article', 'resource') NOT NULL,
+        content_type TEXT NOT NULL CHECK (content_type IN ('video','article','resource')),
         file_path TEXT,
         url TEXT,
         is_featured BOOLEAN DEFAULT 0,
@@ -68,7 +75,7 @@ try {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title VARCHAR(255) NOT NULL,
         description TEXT,
-        resource_type ENUM('article', 'video', 'workshop', 'support_group') NOT NULL,
+        resource_type TEXT NOT NULL CHECK (resource_type IN ('article','video','workshop','support_group')),
         content TEXT,
         file_path TEXT,
         url TEXT,
@@ -113,7 +120,7 @@ try {
     $db->exec("CREATE TABLE IF NOT EXISTS user_favorites (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER NOT NULL,
-        content_type ENUM('content', 'article', 'resource') NOT NULL,
+        content_type TEXT NOT NULL CHECK (content_type IN ('content','article','resource')),
         content_id INTEGER NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         UNIQUE(user_id, content_type, content_id),

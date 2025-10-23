@@ -171,23 +171,39 @@ Options -Indexes +FollowSymLinks
 <IfModule mod_rewrite.c>
     RewriteEngine On
     
-    # Block access to all hidden files and directories except for the .well-known directory
-    RewriteCond %{REQUEST_URI} "^/\.(?!well-known/).*" [NC]
-    RewriteRule .* - [F]
+    # Enable detailed error logging
+    php_value error_reporting E_ALL
+    php_flag display_errors on
     
-    # Block access to specific directories
-    RewriteRule ^(config|vendor|tests|node_modules|\.git|\.github|\.vscode|\.idea)/ - [F,L,NC]
+    # Allow access to specific files
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteCond %{REQUEST_URI} !\.(css|js|jpe?g|gif|png|ico|svg|woff2?|ttf|eot|map)$ [NC]
+    RewriteRule ^ - [L]
+    
+    # Block access to sensitive directories
+    RewriteRule ^(config|tests|node_modules|\.git|\.github|\.vscode|\.idea)/ - [F,L,NC]
     
     # Block access to specific file types
-    <FilesMatch "\.(env|log|sql|tpl|twig|md|sh|bat|cmd|php[0-9]?|phtml|phps|pht|phar|s?html?|pl|py|jsp|asp|sh|cgi|htaccess|htpasswd|ini|psd|log|error_log|access_log|gitignore|gitmodules|gitkeep|gitattributes|git|svn|DS_Store|DS_Store?|_DS_Store|\.AppleDouble|\.LSOverride|\.Spotlight-V100|\.Trashes|ehthumbs\.db|Thumbs\.db|composer\.(json|lock)|package(-lock)?\.json|yarn\.lock|webpack\.config\.js|Dockerfile|docker-compose\.ya?ml|README\.md|CHANGELOG\.md|UPGRADE\.md|LICENSE|LICENSE\..*|phpunit\.xml\.dist|phpunit\.xml|phpcs\.xml|phpmd\.xml|psalm\.xml|phpstan\.neon|phpstan-baseline\.neon|phpstan-baseline\.neon\.dist|phpunit\.xml|phpunit\.xml\.dist|behat\.yml|behat\.yaml|appveyor\.yml|travis\.yml|phpcs\.xml\.dist|phpmd\.xml\.dist|psalm\.xml\.dist|phpstan\.neon\.dist|phpstan-baseline\.neon\.dist|phpunit\.xml\.dist|behat\.yml\.dist|behat\.yaml\.dist|appveyor\.yml\.dist|travis\.yml\.dist|phpcs\.xml\.dist|phpmd\.xml\.dist|psalm\.xml\.dist|phpstan\.neon\.dist|phpstan-baseline\.neon\.dist)$">
-    <IfModule mod_authz_core.c>
-        Require all denied
-    </IfModule>
-    <IfModule !mod_authz_core.c>
-        Order allow,deny
-        Deny from all
-    </IfModule>
+    <FilesMatch "\.(env|log|sql|tpl|twig|md|sh|bat|cmd|phps|pht|phar|s?html?|pl|py|jsp|asp|sh|cgi|htaccess|htpasswd|ini|psd|gitignore|gitmodules|gitkeep|gitattributes|git|svn|DS_Store|DS_Store?|_DS_Store|\.AppleDouble|\.LSOverride|\.Spotlight-V100|\.Trashes|ehthumbs\.db|Thumbs\.db)$">
+        <IfModule mod_authz_core.c>
+            Require all denied
+        </IfModule>
+        <IfModule !mod_authz_core.c>
+            Order allow,deny
+            Deny from all
+        </IfModule>
     </FilesMatch>
+    
+    # Allow access to index.php
+    <Files "index.php">
+        <IfModule mod_authz_core.c>
+            Require all granted
+        </IfModule>
+        <IfModule !mod_authz_core.c>
+            Order allow,deny
+            Allow from all
+        </IfModule>
+    </Files>
 </IfModule>
 
 # Enable Keep-Alive

@@ -1,6 +1,9 @@
 <?php
-// Simple autoloader for TwitterOAuth
-require_once __DIR__ . '/composer/ca-bundle/src/CaBundle.php';
+// Simple autoloader for vendor packages present in this repo
+$__ca = __DIR__ . '/ca-bundle/ca-bundle-main/src/CaBundle.php';
+if (file_exists($__ca)) {
+    require_once $__ca;
+}
 spl_autoload_register(function ($class) {
     $prefix = 'Abraham\\TwitterOAuth\\';
     $base_dir = __DIR__ . '/abraham/twitteroauth/src/';

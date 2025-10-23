@@ -8,13 +8,17 @@ define('SESSION_LIFETIME', 3600 * 24); // 24 hours
 define('BCRYPT_COST', 12);
 
 // Site settings
-define('SITE_NAME', 'Freedom Path - Pornography Recovery Support');
+define('SITE_NAME', 'Mind Doctor');
+define('SITE_TAGLINE', 'Breaking the stigma to help parents raise resilient youth');
 define('SITE_URL', 'http://localhost/consultation_site');
 define('ADMIN_EMAIL', 'joronimoamanya@gmail.com');
 
 // File upload settings
 define('UPLOAD_DIR', __DIR__ . '/../uploads/');
-define('MAX_FILE_SIZE', 5 * 1024 * 1024); // 5MB
+define('MAX_FILE_SIZE', 5 * 1024 * 1024);
+define('MAX_UPLOAD_SIZE_DOCUMENT', 20 * 1024 * 1024);
+define('MAX_UPLOAD_SIZE_AUDIO', 50 * 1024 * 1024);
+define('MAX_UPLOAD_SIZE_VIDEO', 200 * 1024 * 1024);
 
 // Video call settings (using Daily.co or similar WebRTC service)
 define('VIDEO_API_KEY', 'your_daily_co_api_key_here');
@@ -34,6 +38,13 @@ ini_set('display_errors', 1);
 // Auto-load database
 require_once __DIR__ . '/database.php';
 
+if (!defined('GOOGLE_API_KEY')) {
+    define('GOOGLE_API_KEY', getenv('GOOGLE_API_KEY') ?: '');
+}
+if (!defined('GOOGLE_CX')) {
+    define('GOOGLE_CX', getenv('GOOGLE_CX') ?: '');
+}
+
 // Helper functions
 function sanitize($data) {
     return htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
@@ -49,7 +60,7 @@ function isLoggedIn() {
 
 function requireLogin() {
     if (!isLoggedIn()) {
-        header('Location: login.php');
+        header('Location: /auth/login.php');
         exit;
     }
 }
@@ -75,4 +86,137 @@ function jsonResponse($data, $statusCode = 200) {
 function isAjax() {
     return !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && 
            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest';
+}
+
+function getCurrentUser() {
+    if (!isLoggedIn()) return null;
+    $db = Database::getInstance();
+    try {
+        return $db->fetchOne('SELECT * FROM users WHERE id = ?', [$_SESSION['user_id']]);
+    } catch (Exception $e) {
+        return null;
+    }
+}
+
+function isAdmin($userId = null) {
+    $userId = $userId ?? ($_SESSION['user_id'] ?? null);
+    if (!$userId) return false;
+    $db = Database::getInstance();
+    try {
+        $u = $db->fetchOne('SELECT email FROM users WHERE id = ?', [$userId]);
+        return $u && isset($u['email']) && strtolower($u['email']) === strtolower(ADMIN_EMAIL);
+    } catch (Exception $e) {
+        return false;
+    }
+}
+
+function requireAdmin() {
+    if (!isLoggedIn() || !isAdmin()) {
+        header('Location: /auth/login.php');
+        exit;
+    }
+}
+
+function getTotalUsers() {
+    $db = Database::getInstance();
+    try {
+        $row = $db->fetchOne('SELECT COUNT(*) AS c FROM users');
+        return (int)($row['c'] ?? 0);
+    } catch (Exception $e) {
+        return 0;
+    }
+}
+
+function getActiveUsersToday() {
+    $db = Database::getInstance();
+    try {
+        $row = $db->fetchOne("SELECT COUNT(*) AS c FROM users WHERE date(last_login) = date('now')");
+        return (int)($row['c'] ?? 0);
+    } catch (Exception $e) {
+        return 0;
+    }
+}
+
+function getNewContentCount($days = 7) {
+    $db = Database::getInstance();
+    try {
+        $row = $db->fetchOne("SELECT COUNT(*) AS c FROM educational_content WHERE datetime(created_at) >= datetime('now', ?)", ['-' . (int)$days . ' days']);
+        return (int)($row['c'] ?? 0);
+    } catch (Exception $e) {
+        return 0;
+    }
+}
+
+function getPendingItemsCount() {
+    $db = Database::getInstance();
+    try {
+        $row = $db->fetchOne('SELECT COUNT(*) AS c FROM news_articles WHERE is_approved = 0');
+        return (int)($row['c'] ?? 0);
+    } catch (Exception $e) {
+        return 0;
+    }
+}
+
+function getRecentActivities($limit = 10) {
+    $db = Database::getInstance();
+    try {
+        return $db->fetchAll('SELECT * FROM user_activity ORDER BY created_at DESC LIMIT ?', [(int)$limit]);
+    } catch (Exception $e) {
+        return [];
+    }
+}
+
+function getUnreadNotificationCount($userId) {
+    return 0;
+}
+
+function getRecentNotifications($limit = 5) {
+    return [];
+}
+
+function getUserFullName($userId) {
+    $db = Database::getInstance();
+    try {
+        $row = $db->fetchOne('SELECT name FROM users WHERE id = ?', [$userId]);
+        return $row['name'] ?? 'User';
+    } catch (Exception $e) {
+        return 'User';
+    }
+}
+
+function timeAgo($datetime) {
+    try {
+        $ts = strtotime($datetime);
+        $diff = time() - $ts;
+        if ($diff < 60) return $diff . 's ago';
+        if ($diff < 3600) return floor($diff/60) . 'm ago';
+        if ($diff < 86400) return floor($diff/3600) . 'h ago';
+        return floor($diff/86400) . 'd ago';
+    } catch (Exception $e) {
+        return $datetime;
+    }
+}
+
+function formatDate($datetime) {
+    try {
+        return date('Y-m-d H:i', strtotime($datetime));
+    } catch (Exception $e) {
+        return (string)$datetime;
+    }
+}
+
+function getStorageUsage() {
+    $dir = __DIR__ . '/../data';
+    $bytes = 0;
+    if (is_dir($dir)) {
+        $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS));
+        foreach ($it as $file) { $bytes += $file->getSize(); }
+    }
+    $mb = $bytes / (1024*1024);
+    $percent = min(100, (int)round(($mb / 1024) * 100));
+    return $percent;
+}
+
+function getLastBackupTime() {
+    return 'N/A';
 }

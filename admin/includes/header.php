@@ -5,7 +5,7 @@
 
 // Check if the user is logged in and is an admin
 if (!isset($_SESSION['user_id']) || !isAdmin($_SESSION['user_id'])) {
-    header('Location: /login.php?redirect=' . urlencode($_SERVER['REQUEST_URI']));
+    header('Location: /auth/login.php?redirect=' . urlencode($_SERVER['REQUEST_URI']));
     exit();
 }
 
