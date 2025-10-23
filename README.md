@@ -44,9 +44,7 @@ A comprehensive web platform designed to support individuals struggling with por
   - `discussions.php` (lightweight topics stored locally)
   - `practitioners.php` (sample helper directory)
 - Uploads feature disabled; `uploads.php` now redirects to `dashboard.php` and the sidebar link was removed.
-- Profile management enhanced:
-  - Update full name and email with uniqueness checks
-  - Change password with current-password verification and bcrypt hashing
+- Profile feature removed; `profile.php` deleted and navigation links removed.
 - All pages reference the single shared stylesheet `assets/css/style.css` with consistent HTML skeleton.
 
 ## 🛠️ Technology Stack
@@ -184,7 +182,6 @@ consultation_site/
 ├── exercises.php               # Stress-relief exercises
 ├── discussions.php             # Lightweight topics (local device)
 ├── practitioners.php           # Sample helper directory
-├── profile.php                 # Profile management
 ├── video-call.php              # Video consultation
 ├── forms.php                   # Deprecated (legacy)
 ├── uploads.php                 # Disabled (redirects to dashboard)
