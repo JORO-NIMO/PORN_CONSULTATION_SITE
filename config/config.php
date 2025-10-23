@@ -34,6 +34,11 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
             header('Location: /auth/login.php?expired=1');
             exit;
         }
+        // Periodic session ID rotation (every 15 minutes)
+        if (!isset($_SESSION['last_regen']) || (time() - (int)$_SESSION['last_regen'] > 900)) {
+            session_regenerate_id(true);
+            $_SESSION['last_regen'] = time();
+        }
     }
 }
 
@@ -69,6 +74,13 @@ date_default_timezone_set('Africa/Kampala');
 // Error reporting (disable in production)
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+
+// Baseline security headers (safe defaults)
+if (!headers_sent()) {
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: SAMEORIGIN');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+}
 
 // Auto-load database
 require_once __DIR__ . '/database.php';

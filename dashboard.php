@@ -31,7 +31,12 @@ $upcomingConsultations = $db->fetchAll(
 </head>
 <body>
     <?php include 'includes/header.php'; ?>
-    
+    <section class="page-hero">
+        <div class="container">
+            <h1>Dashboard</h1>
+            <p class="subtitle">Your progress and quick tools</p>
+        </div>
+    </section>
     <main class="dashboard">
         <div class="container">
             <div class="welcome-section">
@@ -121,11 +126,7 @@ $upcomingConsultations = $db->fetchAll(
                         <h3>Educational Resources</h3>
                         <p>Learn about recovery</p>
                     </a>
-                    <a href="forms.php" class="action-card">
-                        <span class="action-icon">📝</span>
-                        <h3>Assessment Forms</h3>
-                        <p>Track your progress</p>
-                    </a>
+                    
                 </div>
             </section>
         </div>

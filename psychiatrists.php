@@ -29,13 +29,14 @@ foreach ($psychiatrists as $p) {
 </head>
 <body>
     <?php include 'includes/header.php'; ?>
-    
+    <section class="page-hero">
+        <div class="container">
+            <h1>Our Psychiatrists</h1>
+            <p class="subtitle">Connect with experienced professionals who understand your journey</p>
+        </div>
+    </section>
     <main class="psychiatrists-page">
         <div class="container">
-            <div class="page-header">
-                <h1>Our Psychiatrists</h1>
-                <p class="subtitle">Connect with experienced professionals who understand your journey</p>
-            </div>
             
             <div class="psychiatrists-grid">
                 <?php foreach ($uniquePsychiatrists as $psych): ?>

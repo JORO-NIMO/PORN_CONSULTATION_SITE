@@ -136,7 +136,6 @@ $successRate = $totalConsultations > 0 ? round(($totalConsultations / max($total
 </head>
 <body>
     <?php include 'includes/header.php'; ?>
-    
     <section class="hero">
         <div class="container">
             <h1>🌟 Nurturing Mental Wellness for Youth and Parents</h1>
@@ -211,42 +210,6 @@ $successRate = $totalConsultations > 0 ? round(($totalConsultations / max($total
         </div>
     </section>
     
-    <!-- Partners Section -->
-    <section class="partners-section" style="background: white; padding: 4rem 2rem; overflow: hidden;">
-        <div class="container">
-            <h2 style="text-align: center; font-size: 2rem; margin-bottom: 3rem; color: var(--dark);">Our Trusted Partners</h2>
-            <div class="partners-slider">
-                <div class="partners-track">
-                    <!-- Partner logos will slide here -->
-                    <?php
-                    // Dynamically load partner images
-                    for ($i = 1; $i <= 6; $i++) {
-                        $partnerImg = '';
-                        // Check for different image formats
-                        if (file_exists("assets/images/partners/partner{$i}.png")) {
-                            $partnerImg = "assets/images/partners/partner{$i}.png";
-                        } elseif (file_exists("assets/images/partners/partner{$i}.jpg")) {
-                            $partnerImg = "assets/images/partners/partner{$i}.jpg";
-                        } elseif (file_exists("assets/images/partners/partner{$i}.jpeg")) {
-                            $partnerImg = "assets/images/partners/partner{$i}.jpeg";
-                        }
-                        
-                        // Fallback SVG placeholder
-                        $fallback = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100'%3E%3Crect fill='%23f5f3ff' width='200' height='100'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='16' fill='%236366f1'%3EPartner {$i}%3C/text%3E%3C/svg%3E";
-                        
-                        echo "<div class='partner-item'>";
-                        if ($partnerImg) {
-                            echo "<img src='{$partnerImg}' alt='Partner {$i}' loading='lazy'>";
-                        } else {
-                            echo "<img src='{$fallback}' alt='Partner {$i}'>";
-                        }
-                        echo "</div>";
-                    }
-                    ?>
-                </div>
-            </div>
-        </div>
-    </section>
     
     <section class="cta-section">
         <div class="container">
@@ -255,67 +218,9 @@ $successRate = $totalConsultations > 0 ? round(($totalConsultations / max($total
             <a href="auth/register.php" class="btn" style="background: white; color: var(--primary); padding: 1rem 3rem; font-size: 1.25rem;">Create Free Account</a>
         </div>
     </section>
-    
     <?php include 'includes/footer.php'; ?>
     <script src="assets/js/main.js"></script>
-    
     <style>
-    /* Partners Slider Styles */
-    .partners-slider {
-        position: relative;
-        overflow: hidden;
-        padding: 2rem 0;
-    }
-    
-    .partners-track {
-        display: flex;
-        gap: 4rem;
-        animation: slidePartners 40s linear infinite;
-    }
-    
-    .partner-item {
-        flex-shrink: 0;
-        width: 200px;
-        height: 100px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: white;
-        border-radius: 12px;
-        padding: 1rem;
-        box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
-        transition: all 0.3s ease;
-    }
-    
-    .partner-item:hover {
-        transform: translateY(-5px) scale(1.05);
-        box-shadow: 0 8px 25px rgba(99, 102, 241, 0.2);
-    }
-    
-    .partner-item img {
-        max-width: 100%;
-        max-height: 100%;
-        object-fit: contain;
-        transition: transform 0.3s ease;
-    }
-    
-    .partner-item:hover img {
-        transform: scale(1.05);
-    }
-    
-    @keyframes slidePartners {
-        0% {
-            transform: translateX(100%);
-        }
-        100% {
-            transform: translateX(calc(-200px * 12 - 4rem * 12));
-        }
-    }
-    
-    .partners-track:hover {
-        animation-play-state: paused;
-    }
-    
     /* Enhanced Home Page Animations */
     @keyframes fadeInUp {
         from {
@@ -421,17 +326,6 @@ $successRate = $totalConsultations > 0 ? round(($totalConsultations / max($total
     </style>
     
     <script>
-    // Partners slider auto-advance every 3 seconds
-    let currentPartnerIndex = 0;
-    const partnersTrack = document.querySelector('.partners-track');
-    const partnerItems = document.querySelectorAll('.partner-item');
-    
-    // Duplicate items for seamless loop
-    if (partnersTrack && partnerItems.length > 0) {
-        const clone = partnersTrack.cloneNode(true);
-        partnersTrack.parentElement.appendChild(clone);
-    }
-    
     // Intersection Observer for scroll animations
     const observerOptions = {
         threshold: 0.1,
@@ -448,7 +342,7 @@ $successRate = $totalConsultations > 0 ? round(($totalConsultations / max($total
     }, observerOptions);
     
     // Observe elements for scroll animations
-    document.querySelectorAll('.features, .stats-section, .partners-section, .cta-section').forEach(el => {
+    document.querySelectorAll('.features, .stats-section, .cta-section').forEach(el => {
         el.style.opacity = '0';
         el.style.transform = 'translateY(30px)';
         el.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';

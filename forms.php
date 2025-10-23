@@ -2,6 +2,9 @@
 require_once 'config/config.php';
 requireLogin();
 
+header('Location: dashboard.php');
+exit;
+
 $db = Database::getInstance();
 
 // Handle form creation

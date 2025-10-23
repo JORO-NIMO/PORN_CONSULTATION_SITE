@@ -1,3 +1,4 @@
+</div></div>
 <footer style="background: white; padding: 2rem 0; margin-top: 2rem; box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);">
     <div class="container">
         <!-- Partners Section -->

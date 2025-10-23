@@ -36,8 +36,12 @@ if ($q !== '' && GOOGLE_API_KEY && GOOGLE_CX) {
 </head>
 <body>
 <?php include __DIR__ . '/includes/header.php'; ?>
-<main class="container" style="padding:2rem 1rem;">
-    <h1>Search Better Ways of Living</h1>
+<section class="page-hero">
+    <div class="container">
+        <h1>Search Better Ways of Living</h1>
+    </div>
+</section>
+<main class="container" style="padding:1.25rem 1rem;">
     <form method="GET" action="https://www.google.com/search" target="_blank" style="margin:1rem 0; display:flex; gap:.5rem;">
         <input type="text" name="q" value="<?php echo sanitize($q); ?>" placeholder="Breathing exercises for stress, mindful routines, youth wellness" style="flex:1; padding:.75rem;">
         <input type="hidden" name="hl" value="en">
