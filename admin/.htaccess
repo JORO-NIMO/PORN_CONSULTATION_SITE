@@ -1,0 +1,15 @@
+# Prevent directory listing
+Options -Indexes
+
+# Protect against unauthorized access
+<IfModule mod_authz_core.c>
+    # Apache 2.4+
+    <RequireAll>
+        Require all denied
+    </RequireAll>
+</IfModule>
+<IfModule !mod_authz_core.c>
+    # Apache 2.2
+    Order deny,allow
+    Deny from all
+</IfModule>

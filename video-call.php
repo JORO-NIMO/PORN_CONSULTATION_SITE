@@ -101,6 +101,8 @@ if (!$videoSession) {
         const CONFIG = {
             roomId: '<?php echo $videoSession['room_id']; ?>',
             userToken: '<?php echo $videoSession['user_token']; ?>',
+            userId: <?php echo (int)$_SESSION['user_id']; ?>,
+            userName: '<?php echo sanitize($_SESSION['user_name'] ?? 'You'); ?>',
             consultationId: <?php echo $consultationId; ?>,
             isAnonymous: true
         };

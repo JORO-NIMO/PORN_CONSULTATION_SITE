@@ -1,0 +1,971 @@
+<?php 
+require_once 'config/config.php';
+
+// Set page title
+$pageTitle = SITE_NAME . ' — Your Path to Mental Wellness';
+
+// Include header
+include 'includes/header.php';
+?>
+
+<!-- Hero Section -->
+<header class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1>Your Journey to Mental Wellness Starts Here</h1>
+                <p class="lead">Access professional mental health support, resources, and a caring community - all in one place.</p>
+                <div class="cta-buttons">
+                    <a href="auth/register.php" class="btn btn-primary btn-lg me-3">Get Started</a>
+                    <a href="#how-it-works" class="btn btn-outline-light btn-lg">Learn More</a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <img src="assets/images/hero-illustration.svg" alt="Mental Wellness" class="img-fluid">
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Features Section -->
+<section id="features" class="features-section py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">How We Can Help</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-user-md"></i>
+                    </div>
+                    <h3>Professional Support</h3>
+                    <p>Connect with licensed mental health professionals for personalized care and guidance.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>24/7 AI Assistant</h3>
+                    <p>Chat with Granny, our AI wellness assistant, anytime you need someone to talk to.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Supportive Community</h3>
+                    <p>Join a safe space to share experiences and connect with others on similar journeys.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section id="how-it-works" class="how-it-works py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">How It Works</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Create Your Account</h3>
+                    <p>Sign up for free and complete your profile to get started on your wellness journey.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Explore Resources</h3>
+                    <p>Access exercises, articles, and connect with professionals or our AI assistant.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Start Your Journey</h3>
+                    <p>Begin your path to better mental health with our comprehensive support system.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">What Our Community Says</h2>
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div id="testimonialCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <div class="testimonial-item text-center">
+                                <p class="testimonial-text">"This platform has been a game-changer for my mental health journey. The resources and support are incredible."</p>
+                                <div class="testimonial-author">- Sarah M.</div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="testimonial-item text-center">
+                                <p class="testimonial-text">"Chatting with Granny has been so helpful when I need someone to talk to late at night. It's like having a wise friend who's always there."</p>
+                                <div class="testimonial-author">- James T.</div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="testimonial-item text-center">
+                                <p class="testimonial-text">"The community here is so supportive. It's comforting to know I'm not alone in my struggles."</p>
+                                <div class="testimonial-author">- Priya K.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#testimonialCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2>Ready to Start Your Wellness Journey?</h2>
+        <p class="lead mb-4">Join thousands of others who have found support and healing through our platform.</p>
+        <a href="auth/register.php" class="btn btn-light btn-lg me-3">Sign Up Free</a>
+        <a href="#features" class="btn btn-outline-light btn-lg">Learn More</a>
+    </div>
+</section>
+
+<!-- Mobile App Banner -->
+<section class="mobile-app-banner py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2>Take Us With You</h2>
+                <p class="lead">Download our mobile app to access support anytime, anywhere.</p>
+                <div class="app-buttons">
+                    <a href="#" class="btn btn-dark me-2 mb-2">
+                        <i class="fab fa-apple me-2"></i> App Store
+                    </a>
+                    <a href="#" class="btn btn-dark mb-2">
+                        <i class="fab fa-google-play me-2"></i> Google Play
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center">
+                <img src="assets/images/mobile-app-preview.png" alt="Mobile App Preview" class="img-fluid" style="max-height: 400px;">
+            </div>
+        </div>
+    </div>
+</section>
+
+<?php include 'includes/footer.php'; ?>
+
+<style>
+            --primary-color: #4a6fa5;
+            --secondary-color: #6c757d;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+        }
+        
+        /* Hero Section */
+        .hero-section {
+            padding: 6rem 0;
+            background: linear-gradient(135deg, #4a6fa5 0%, #3a5a8a 100%);
+            color: white;
+        }
+        
+        .hero-section h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        
+        .hero-section .lead {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .hero-section img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Features Section */
+        .features-section {
+            padding: 5rem 0;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            height: 100%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(74, 111, 165, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            font-size: 1.8rem;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+        
+        /* How It Works */
+        .how-it-works {
+            padding: 5rem 0;
+        }
+        
+        .step {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            background: white;
+            border-radius: 10px;
+            height: 100%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .step h3 {
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+        
+        /* Testimonials */
+        .testimonials {
+            padding: 5rem 0;
+            background-color: #f9f9f9;
+        }
+        
+        .testimonial-item {
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .testimonial-text {
+            font-size: 1.25rem;
+            font-style: italic;
+            margin-bottom: 1.5rem;
+            color: #555;
+        }
+        
+        .testimonial-author {
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            padding: 5rem 0;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            margin-bottom: 1.5rem;
+        }
+        
+        /* Mobile App Banner */
+        .mobile-app-banner {
+            padding: 5rem 0;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        
+        .app-buttons {
+            margin-top: 2rem;
+        }
+        
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 4rem 0;
+                text-align: center;
+            }
+            
+            .hero-section h1 {
+                font-size: 2.2rem;
+            }
+            
+            .hero-section .lead {
+                font-size: 1.2rem;
+            }
+            
+            .feature-card, .step {
+                margin-bottom: 1.5rem;
+            }
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* Buttons */
+        .btn {
+            border-radius: 50px;
+            padding: 0.6rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a5a8a;
+            border-color: #3a5a8a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-outline-light:hover {
+            color: var(--primary-color);
+            background-color: white;
+        }
+        
+        /* Section Headings */
+        h2 {
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        h2:after {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 3px;
+            background: var(--primary-color);
+            bottom: -10px;
+            left: 0;
+            border-radius: 3px;
+        }
+        
+        .text-center h2:after {
+            left: 25%;
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+        
+        .delay-1 { animation-delay: 0.2s; }
+        .delay-2 { animation-delay: 0.4s; }
+        .delay-3 { animation-delay: 0.6s; }
+            max-width: 1000px;
+            margin: 2rem auto;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background: white;
+            height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #3a5a8c 100%);
+            color: white;
+            padding: 1.2rem;
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 600;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+        }
+        
+        .chat-message {
+            margin-bottom: 1rem;
+            max-width: 80%;
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            line-height: 1.5;
+            position: relative;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .chat-message.user {
+            background-color: var(--primary-color);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 0.25rem;
+        }
+        
+        .chat-message.assistant {
+            background-color: #e9ecef;
+            color: var(--dark-color);
+            margin-right: auto;
+            border-bottom-left-radius: 0.25rem;
+        }
+        
+        .chat-input-container {
+            display: flex;
+            padding: 1rem;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            gap: 0.5rem;
+        }
+        
+        #chat-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ced4da;
+            border-radius: 2rem;
+            font-size: 1rem;
+            resize: none;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        #chat-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(74, 111, 165, 0.25);
+        }
+        
+        #send-message {
+            background: linear-gradient(135deg, var(--primary-color) 0%, #3a5a8c 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 48px;
+            height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        #send-message:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        #send-message:disabled {
+            background: #9bb3d8;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .typing-indicator {
+            display: none;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+            background: #e9ecef;
+            border-radius: 1rem;
+            width: fit-content;
+            max-width: 80%;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background-color: #6c757d;
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .chat-container {
+                margin: 0;
+                height: 100vh;
+                border-radius: 0;
+            }
+            
+            .chat-message {
+                max-width: 90%;
+            }
+        }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #c1c1c1;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8;
+        }
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .feature-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%);
+            transition: var(--transition);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+        .feature-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        .stats-section {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .stats-section * {
+            color: white;
+        }
+        .stats-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 50%, rgba(139, 92, 246, 0.2) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 50%, rgba(6, 182, 212, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 2rem auto 0;
+        }
+        .stat-item h3 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #a78bfa 0%, #22d3ee 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        .stat-item p {
+            color: white;
+        }
+        .cta-section {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #06b6d4 100%);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+            box-shadow: 0 -10px 40px rgba(99, 102, 241, 0.2);
+        }
+        .cta-section * {
+            color: white;
+        }
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+        .cta-section p {
+            color: white;
+        }
+    </style>
+    
+    <!-- Add animation to elements when they come into view -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const animateOnScroll = () => {
+            const elements = document.querySelectorAll('.feature-card, .step, .testimonial-item');
+            elements.forEach((element, index) => {
+                const elementPosition = element.getBoundingClientRect().top;
+                const screenPosition = window.innerHeight / 1.3;
+                
+                if (elementPosition < screenPosition) {
+                    element.classList.add('fade-in');
+                }
+            });
+        };
+        
+        // Initial check
+        animateOnScroll();
+        
+        // Check on scroll
+        window.addEventListener('scroll', animateOnScroll);
+    });
+    </script>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <i class="fas fa-comments me-2"></i>
+            Mental Wellness Assistant
+        </div>
+        
+        <div class="chat-messages" id="chat-messages">
+            <div class="typing-indicator" id="typing-indicator">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+        
+        <div class="chat-input-container">
+            <input type="text" id="chat-input" placeholder="Type your message here..." autocomplete="off">
+            <button id="send-message" aria-label="Send message">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Add Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Add our chat script -->
+    <script src="assets/js/wellness-chat.js"></script>
+            <div class="hero-buttons">
+                <a href="auth/register.php" class="btn btn-primary" style="background: white; color: var(--primary);">Join <?php echo SITE_NAME; ?></a>
+                <a href="exercises.php" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white;">Try Breathing Exercises</a>
+            </div>
+        </div>
+    </section>
+    
+    <section class="features">
+        <div class="container">
+            <h2 style="text-align: center; margin-bottom: 3rem; font-size: 2.5rem; color: var(--dark);">How We Help You</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">👨‍⚕️</div>
+                    <h3>Professional Psychiatrists</h3>
+                    <p>Connect with experienced specialists who understand addiction and recovery</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Anonymous Messaging</h3>
+                    <p>Reach out for support in a safe, confidential environment</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3>Educational Resources</h3>
+                    <p>Learn about the science, effects, and recovery process</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📹</div>
+                    <h3>Video Consultations</h3>
+                    <p>Secure, anonymous video calls with psychiatrists</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3>Progress Tracking</h3>
+                    <p>Customizable forms to monitor your recovery journey</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤝</div>
+                    <h3>Community Support</h3>
+                    <p>Connect with others on the same path to freedom</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="stats-section">
+        <div class="container">
+            <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">The Reality of Pornography Addiction</h2>
+            <p style="font-size: 1.25rem; opacity: 0.9; margin-bottom: 2rem;">Understanding the problem is the first step to recovery</p>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <h3><?php echo number_format($totalUsers); ?>+</h3>
+                    <p>people on their recovery journey</p>
+                </div>
+                <div class="stat-item">
+                    <h3><?php echo number_format($totalConsultations); ?>+</h3>
+                    <p>successful consultations completed</p>
+                </div>
+                <div class="stat-item">
+                    <h3><?php echo number_format($totalResources); ?>+</h3>
+                    <p>educational resources available</p>
+                </div>
+                <div class="stat-item">
+                    <h3><?php echo $successRate; ?>%</h3>
+                    <p>recovery success rate with support</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Start Your Recovery Journey?</h2>
+            <p style="font-size: 1.25rem; margin-bottom: 2rem;">Join thousands who have found freedom. Take the first step today.</p>
+            <a href="auth/register.php" class="btn" style="background: white; color: var(--primary); padding: 1rem 3rem; font-size: 1.25rem;">Create Free Account</a>
+        </div>
+    </section>
+    <?php include 'includes/footer.php'; ?>
+    <footer class="chat-footer text-center py-3">
+        <div class="social-links">
+            <a href="https://www.youtube.com/@MFPug" target="_blank" rel="noopener noreferrer" class="social-link" title="YouTube">
+                <i class="fab fa-youtube"></i>
+            </a>
+            <a href="https://twitter.com/ishabarundo" target="_blank" rel="noopener noreferrer" class="social-link" title="X (Twitter)">
+                <i class="fab fa-x-twitter"></i>
+            </a>
+            <a href="https://www.tiktok.com/@ishabarundo" target="_blank" rel="noopener noreferrer" class="social-link" title="TikTok">
+                <i class="fab fa-tiktok"></i>
+            </a>
+            <a href="https://www.instagram.com/ishabarundo" target="_blank" rel="noopener noreferrer" class="social-link" title="Instagram">
+                <i class="fab fa-instagram"></i>
+            </a>
+        </div>
+        <div class="mt-2 text-muted small">© <?php echo date('Y'); ?> Mental Freedom Path. All rights reserved.</div>
+    </footer>
+
+    <script src="assets/js/main.js"></script>
+    <style>
+    /* Social Media Links */
+    .chat-footer {
+        background: var(--light-color);
+        border-top: 1px solid #dee2e6;
+        margin-top: 1rem;
+    }
+    
+    .social-links {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .social-link {
+        color: var(--secondary-color);
+        font-size: 1.5rem;
+        transition: color 0.3s ease;
+    }
+    
+    .social-link:hover {
+        color: var(--primary-color);
+        text-decoration: none;
+    }
+    
+    /* Enhanced Home Page Animations */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @keyframes fadeInLeft {
+        from {
+            opacity: 0;
+            transform: translateX(-30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes fadeInRight {
+        from {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes scaleIn {
+        from {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+    
+    /* Apply animations to elements */
+    .hero h1 {
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+    
+    .hero p {
+        animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+    
+    .hero-buttons {
+        animation: fadeInUp 0.8s ease-out 0.6s both;
+    }
+    
+    .feature-card {
+        animation: scaleIn 0.6s ease-out both;
+    }
+    
+    .feature-card:nth-child(1) { animation-delay: 0.1s; }
+    .feature-card:nth-child(2) { animation-delay: 0.2s; }
+    .feature-card:nth-child(3) { animation-delay: 0.3s; }
+    .feature-card:nth-child(4) { animation-delay: 0.4s; }
+    .feature-card:nth-child(5) { animation-delay: 0.5s; }
+    .feature-card:nth-child(6) { animation-delay: 0.6s; }
+    
+    .feature-icon {
+        animation: float 3s ease-in-out infinite;
+    }
+    
+    .stat-item {
+        animation: fadeInUp 0.8s ease-out both;
+    }
+    
+    .stat-item:nth-child(1) { animation-delay: 0.2s; }
+    .stat-item:nth-child(2) { animation-delay: 0.4s; }
+    .stat-item:nth-child(3) { animation-delay: 0.6s; }
+    .stat-item:nth-child(4) { animation-delay: 0.8s; }
+    
+    .cta-section h2 {
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+    
+    .cta-section p {
+        animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+    
+    .cta-section .btn {
+        animation: scaleIn 0.6s ease-out 0.6s both;
+    }
+    </style>
+    
+    <script>
+    // Intersection Observer for scroll animations
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+    
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+    
+    // Observe elements for scroll animations
+    document.querySelectorAll('.features, .stats-section, .cta-section').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = 'opacity 0.8s ease-out, transform 0.8s ease-out';
+        observer.observe(el);
+    });
+    </script>
+</body>
+</html>

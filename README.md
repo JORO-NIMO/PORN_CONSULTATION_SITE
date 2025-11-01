@@ -50,9 +50,10 @@ A comprehensive web platform designed to support individuals struggling with por
 ## 🛠️ Technology Stack
 
 - **Backend**: PHP 7.4+
-- **Database**: SQLite (portable, no installation needed!)
+- **Database**: MySQL (PDO) — standardized across the project
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
-- **Video Calling**: WebRTC (Daily.co compatible)
+- **Video Calling**: WebRTC with WebSocket signaling
+- **AI Assistant**: Gemini (Google Generative Language API)
 - **X (Twitter) API**: For fetching real-time recovery content
 - **Architecture**: MVC-inspired structure
 - **Security**: bcrypt, prepared statements, CSRF tokens
@@ -98,8 +99,8 @@ The platform includes integration with X (formerly Twitter) to display real-time
 ## 📋 Installation
 
 ### Prerequisites
-- **PHP 7.4 or higher** (with SQLite extension)
-- **That's it!** No database server needed!
+- **PHP 7.4 or higher**
+- **MySQL Server** (MariaDB/MySQL 5.7+)
 
 ### 🚀 Quick Start (2 Steps)
 
@@ -107,7 +108,14 @@ The platform includes integration with X (formerly Twitter) to display real-time
    - Download from: https://windows.php.net/download/
    - Or use portable PHP (no installation needed)
 
-2. **Run the Server**
+2. **Configure Database**
+   - Update `DB_HOST`, `DB_NAME`, `DB_USER`, `DB_PASS` in `config.php`
+   - Import schema into MySQL using `config/setup.sql`
+     ```bash
+     mysql -u <user> -p <database> < config/setup.sql
+     ```
+
+3. **Run the Server**
    
    **Windows:**
    ```bash
@@ -122,7 +130,8 @@ The platform includes integration with X (formerly Twitter) to display real-time
 3. **Open Browser**
    Navigate to: `http://localhost:8000`
 
-**That's it!** The database is automatically created on first run with sample data.
+**Notes**:
+- Database setup and migrations are managed via MySQL using `config/setup.sql`.
 
 ### 📱 Access from Other Devices
 
@@ -190,20 +199,18 @@ consultation_site/
 
 ## 🗄️ Database Schema
 
-### SQLite Database (data/database.sqlite)
+### MySQL Database
 
-**Auto-created on first run with:**
+Schema is defined in `config/setup.sql` and includes:
 - **users**: User accounts with authentication
-- **psychiatrists**: Mental health professionals (4 pre-loaded)
+- **psychiatrists**: Mental health professionals
 - **messages**: Anonymous messaging system
 - **consultations**: Scheduled appointments
-- **video_sessions**: Video call records
+- **video_sessions**: Video call records (room ID and shared tokens)
 - **form_templates**: Custom assessment forms
 - **form_submissions**: Form responses
-- **educational_content**: Resources and articles (6 pre-loaded)
+- **educational_content**: Resources and articles
 - **sessions**: Active user sessions
-
-**Backup**: Simply copy `data/database.sqlite` file
 
 ## 🔒 Security Best Practices
 
@@ -233,11 +240,16 @@ Integrate email service (e.g., PHPMailer, SendGrid) in:
 - Consultation reminders
 - Message notifications
 
-### Video Calling
-Configure Daily.co or similar WebRTC service:
-1. Sign up at https://daily.co
-2. Add API key to `config/config.php`
-3. Update `assets/js/video-call.js` with API integration
+### Video Calling & Signaling
+- WebRTC peer-to-peer calling with room-based signaling over WebSocket
+- Start the signaling server:
+  ```bash
+  php chat/server.php
+  ```
+- Client connects to `ws(s)://<host>:8080` and authenticates using the shared video session token (`video_sessions` table)
+- Security:
+  - Origin checks enforced (derived from `BASE_URL`)
+  - Room-scoped messaging; tokens validated against `video_sessions`
 
 ## 📊 Content Management
 
@@ -311,5 +323,6 @@ This platform is built to support individuals on their recovery journey. We ackn
 ---
 
 **Remember**: Recovery is possible. You are not alone. 🌟
-#   P O R N _ C O N S U L T A T I O N _ S I T E  
+#   P O R N _ C O N S U L T A T I O N _ S I T E 
+ 
  

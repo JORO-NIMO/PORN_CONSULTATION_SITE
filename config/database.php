@@ -1,9 +1,11 @@
 <?php
-// Security headers
-header('X-Content-Type-Options: nosniff');
-header('X-Frame-Options: DENY');
-header('X-XSS-Protection: 1; mode=block');
-header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' ws: wss: https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';");
+// Security headers (set only in web contexts, not CLI)
+if (PHP_SAPI !== 'cli') {
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: DENY');
+    header('X-XSS-Protection: 1; mode=block');
+    header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' ws: wss: https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';");
+}
 
 // Disable error display in production
 if (!defined('ENVIRONMENT')) {
@@ -14,24 +16,45 @@ error_reporting(ENVIRONMENT === 'development' ? E_ALL : 0);
 ini_set('display_errors', ENVIRONMENT === 'development' ? '1' : '0');
 
 // Database configuration
+define('DB_HOST', '127.0.0.1'); // Using IP instead of localhost to avoid potential socket issues
+define('DB_NAME', 'mental_freedom_path');
+define('DB_USER', 'root');
+define('DB_PASS', '1234'); // Default XAMPP has no password
+define('DB_CHARSET', 'utf8mb4');
+
 class Database {
     private static $instance = null;
     private $pdo;
+    private $error;
     
     private function __construct() {
+        $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=" . DB_CHARSET;
+        $options = [
+            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES   => false,
+        ];
+        
         try {
-            $this->pdo = new PDO(
-                'sqlite:' . __DIR__ . '/../data/database.sqlite',
-                null,
-                null,
-                [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-                    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES => false,
-                ]
-            );
-            // Enforce foreign key constraints in SQLite
-            $this->pdo->exec('PRAGMA foreign_keys = ON;');
+            // Try to create the database if it doesn't exist
+            try {
+                $this->pdo = new PDO("mysql:host=" . DB_HOST, DB_USER, DB_PASS, $options);
+                $this->pdo->exec("CREATE DATABASE IF NOT EXISTS `" . DB_NAME . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
+                $this->pdo->exec("USE `" . DB_NAME . "`");
+            } catch (PDOException $e) {
+                // If connection fails, try without specifying database first
+                try {
+                    $this->pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+                } catch (PDOException $e) {
+                    // If that fails, provide detailed error information
+                    error_log('Database connection failed: ' . $e->getMessage());
+                    if (ENVIRONMENT === 'development') {
+                        die('Database connection failed: ' . htmlspecialchars($e->getMessage()));
+                    } else {
+                        die('Database connection failed. Please try again later.');
+                    }
+                }
+            }
         } catch (PDOException $e) {
             error_log('Database connection failed: ' . $e->getMessage());
             if (ENVIRONMENT === 'development') {
@@ -71,7 +94,12 @@ class Database {
     public function lastInsertId() {
         return $this->pdo->lastInsertId();
     }
-    
+
+    // Expose the underlying PDO instance for modules needing direct access
+    public function getPdo() {
+        return $this->pdo;
+    }
+
     // Execute a non-prepared SQL statement (DDL or bulk SQL)
     public function exec($sql) {
         return $this->pdo->exec($sql);
@@ -93,22 +121,59 @@ class Database {
         $columns = implode(', ', array_keys($data));
         $placeholders = ':' . implode(', :', array_keys($data));
         
-        $sql = "INSERT INTO $table ($columns) VALUES ($placeholders)";
+        $sql = "INSERT INTO `$table` ($columns) VALUES ($placeholders)";
         $this->query($sql, $data);
         
         return $this->lastInsertId();
     }
+    
+    // Update records in the database
+    public function update($table, $data, $where, $whereParams = []) {
+        $set = [];
+        foreach (array_keys($data) as $key) {
+            $set[] = "`$key` = :$key";
+        }
+        
+        $sql = "UPDATE `$table` SET " . implode(', ', $set) . " WHERE $where";
+        $params = array_merge($data, $whereParams);
+        
+        $stmt = $this->query($sql, $params);
+        return $stmt->rowCount();
+    }
+    
+    // Delete records from the database
+    public function delete($table, $where, $params = []) {
+        $sql = "DELETE FROM `$table` WHERE $where";
+        $stmt = $this->query($sql, $params);
+        return $stmt->rowCount();
+    }
+    
+    // Check if a table exists
+    public function tableExists($table) {
+        try {
+            $result = $this->query("SHOW TABLES LIKE '$table'");
+            return $result->rowCount() > 0;
+        } catch (PDOException $e) {
+            return false;
+        }
+    }
+    
+    // Get a single value from the database
+    public function selectValue($sql, $params = []) {
+        $stmt = $this->query($sql, $params);
+        return $stmt->fetchColumn();
+    }
+    
+    // Get a single row from the database
+    public function selectOne($sql, $params = []) {
+        return $this->query($sql, $params)->fetch();
+    }
+    
+    // Get multiple rows from the database
+    public function select($sql, $params = []) {
+        return $this->query($sql, $params)->fetchAll();
+    }
 }
-// Database file path
-define('DB_FILE', __DIR__ . '/../data/database.sqlite');
 
-// Ensure data directory exists
-if (!file_exists(dirname(DB_FILE))) {
-    mkdir(dirname(DB_FILE), 0755, true);
-}
-
-// Set file permissions
-if (file_exists(DB_FILE)) {
-    chmod(DB_FILE, 0644);
-}
- 
+// Create a global instance for backward compatibility
+$db = Database::getInstance();

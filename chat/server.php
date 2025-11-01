@@ -3,8 +3,11 @@
  * WebSocket Chat Server
  * Run this with: php server.php
  */
+// Suppress deprecation warnings from vendor packages on PHP 8.2+
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
 
 require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use Ratchet\MessageComponentInterface;
@@ -17,15 +20,30 @@ class Chat implements MessageComponentInterface {
     protected $clients;
     protected $users;
     protected $db;
+    protected $rooms;
+    protected $allowedOrigins;
 
     public function __construct() {
         $this->clients = new \SplObjectStorage;
         $this->users = [];
         $this->db = Database::getInstance();
+        $this->rooms = [];
+        // Define allowed origins for WebSocket connections (tighten for production)
+        $origin = defined('BASE_URL') ? parse_url(BASE_URL, PHP_URL_SCHEME) . '://' . parse_url(BASE_URL, PHP_URL_HOST) : 'http://localhost';
+        $this->allowedOrigins = [$origin];
         echo "Chat server started\n";
     }
 
     public function onOpen(ConnectionInterface $conn) {
+        // Origin check
+        $originHeader = $conn->httpRequest->getHeader('Origin');
+        $origin = is_array($originHeader) && count($originHeader) ? $originHeader[0] : '';
+        if (!empty($this->allowedOrigins) && $origin && !in_array($origin, $this->allowedOrigins)) {
+            echo "Rejected connection from origin: {$origin}\n";
+            $conn->close();
+            return;
+        }
+
         $this->clients->attach($conn);
         echo "New connection! ({$conn->resourceId})\n";
     }
@@ -48,6 +66,10 @@ class Chat implements MessageComponentInterface {
                     $this->handleAuth($from, $data);
                     break;
                 
+                case 'join_room':
+                    $this->handleJoinRoom($from, $data);
+                    break;
+                
                 case 'message':
                     $this->handleMessage($from, $data);
                     break;
@@ -58,6 +80,16 @@ class Chat implements MessageComponentInterface {
                 
                 case 'read_receipt':
                     $this->handleReadReceipt($from, $data);
+                    break;
+                
+                // WebRTC signaling
+                case 'webrtc_offer':
+                case 'webrtc_answer':
+                case 'ice_candidate':
+                    $this->handleWebRTCSignal($from, $data);
+                    break;
+                case 'webrtc_request_offer':
+                    $this->handleWebRTCSignal($from, $data);
                     break;
                 
                 default:
@@ -98,9 +130,25 @@ class Chat implements MessageComponentInterface {
             throw new \Exception('Authentication failed: Missing credentials');
         }
 
-        // In a real app, validate the token against your auth system
-        $userId = $data['user_id'];
+        $userId = (int)$data['user_id'];
         $userName = $data['name'] ?? 'User ' . $userId;
+        $token = $data['token'];
+        
+        // Validate token against video sessions (shared auth)
+        $session = $this->db->fetchOne(
+            "SELECT consultation_id, room_id FROM video_sessions WHERE user_token = ? OR psychiatrist_token = ? LIMIT 1",
+            [$token, $token]
+        );
+        if (!$session) {
+            throw new \Exception('Authentication failed: Invalid token');
+        }
+        
+        // Attach room info if provided
+        $conn->roomId = $data['room_id'] ?? $session['room_id'];
+        if (!isset($this->rooms[$conn->roomId])) {
+            $this->rooms[$conn->roomId] = new \SplObjectStorage();
+        }
+        $this->rooms[$conn->roomId]->attach($conn);
         
         $this->users[$userId] = $conn;
         $conn->userId = $userId;
@@ -110,6 +158,7 @@ class Chat implements MessageComponentInterface {
             'type' => 'auth_success',
             'user_id' => $userId,
             'name' => $userName,
+            'room_id' => $conn->roomId,
             'message' => 'Authentication successful'
         ];
         
@@ -118,6 +167,19 @@ class Chat implements MessageComponentInterface {
         $this->sendRecentMessages($conn);
         
         echo "User {$userName} ({$userId}) authenticated\n";
+    }
+
+    protected function handleJoinRoom($conn, $data) {
+        if (empty($data['room_id'])) {
+            throw new \Exception('Join failed: Missing room_id');
+        }
+        $roomId = $data['room_id'];
+        $conn->roomId = $roomId;
+        if (!isset($this->rooms[$roomId])) {
+            $this->rooms[$roomId] = new \SplObjectStorage();
+        }
+        $this->rooms[$roomId]->attach($conn);
+        $conn->send(json_encode(['type' => 'room_joined', 'room_id' => $roomId]));
     }
 
     protected function handleMessage($from, $data) {
@@ -136,15 +198,15 @@ class Chat implements MessageComponentInterface {
         // Save to database
         $this->db->insert('chat_messages', [
             'user_id' => $from->userId,
-            'room_id' => $data['room_id'] ?? 1,
+            'room_id' => $from->roomId ?? 1,
             'message' => $data['message'],
             'created_at' => date('Y-m-d H:i:s')
         ]);
 
         $message['id'] = $this->db->lastInsertId();
         
-        // Broadcast to all connected clients
-        $this->broadcast(json_encode($message));
+        // Broadcast to all clients in the same room
+        $this->broadcastToRoom($from->roomId ?? null, json_encode($message));
     }
 
     protected function broadcastTyping($from, $data) {
@@ -157,7 +219,7 @@ class Chat implements MessageComponentInterface {
             'is_typing' => $data['is_typing'] ?? false
         ];
         
-        $this->broadcast(json_encode($typingData), $from);
+        $this->broadcastToRoom($from->roomId ?? null, json_encode($typingData), $from);
     }
 
     protected function handleReadReceipt($from, $data) {
@@ -179,18 +241,31 @@ class Chat implements MessageComponentInterface {
             'timestamp' => time()
         ];
         
-        $this->broadcast(json_encode($receipt), $from);
+        $this->broadcastToRoom($from->roomId ?? null, json_encode($receipt), $from);
     }
 
     protected function sendRecentMessages($conn, $limit = 50) {
-        $messages = $this->db->fetchAll(
-            "SELECT m.*, u.username as user_name 
-             FROM chat_messages m 
-             JOIN users u ON m.user_id = u.id 
-             ORDER BY m.created_at DESC 
-             LIMIT ?", 
-            [$limit]
-        );
+        // Fetch recent messages for the current room
+        if (isset($conn->roomId)) {
+            $messages = $this->db->fetchAll(
+                "SELECT m.*, u.username as user_name 
+                 FROM chat_messages m 
+                 JOIN users u ON m.user_id = u.id 
+                 WHERE m.room_id = ? 
+                 ORDER BY m.created_at DESC 
+                 LIMIT ?", 
+                [$conn->roomId, $limit]
+            );
+        } else {
+            $messages = $this->db->fetchAll(
+                "SELECT m.*, u.username as user_name 
+                 FROM chat_messages m 
+                 JOIN users u ON m.user_id = u.id 
+                 ORDER BY m.created_at DESC 
+                 LIMIT ?", 
+                [$limit]
+            );
+        }
         
         $response = [
             'type' => 'message_history',
@@ -200,7 +275,7 @@ class Chat implements MessageComponentInterface {
         $conn->send(json_encode($response));
     }
 
-    protected function broadcastUserList() {
+    protected function broadcastUserList($roomId = null) {
         $users = [];
         foreach ($this->users as $userId => $client) {
             $users[] = [
@@ -215,8 +290,12 @@ class Chat implements MessageComponentInterface {
             'users' => $users,
             'count' => count($users)
         ];
-        
-        $this->broadcast(json_encode($response));
+        // Broadcast to a specific room if provided, otherwise to all clients
+        if ($roomId) {
+            $this->broadcastToRoom($roomId, json_encode($response));
+        } else {
+            $this->broadcast(json_encode($response));
+        }
     }
 
     protected function broadcast($message, $exclude = null) {
@@ -225,6 +304,30 @@ class Chat implements MessageComponentInterface {
                 $client->send($message);
             }
         }
+    }
+
+    protected function broadcastToRoom($roomId, $message, $exclude = null) {
+        if (!$roomId || !isset($this->rooms[$roomId])) {
+            return;
+        }
+        foreach ($this->rooms[$roomId] as $client) {
+            if ($exclude !== $client) {
+                $client->send($message);
+            }
+        }
+    }
+
+    protected function handleWebRTCSignal($from, $data) {
+        if (!isset($from->roomId)) {
+            throw new \Exception('Signaling failed: Not in a room');
+        }
+        $payload = [
+            'type' => $data['action'],
+            'from' => $from->userId,
+            'payload' => $data['payload'] ?? [],
+            'timestamp' => time()
+        ];
+        $this->broadcastToRoom($from->roomId, json_encode($payload), $from);
     }
 }
 
