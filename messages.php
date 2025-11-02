@@ -38,7 +38,14 @@ $sentMessages = $db->fetchAll(
 );
 
 $receivedMessages = $db->fetchAll(
-    "SELECT m.*, u.name as sender_name, p.name as psychiatrist_name 
+    "SELECT m.*, 
+            COALESCE(
+                NULLIF(u.name, ''),
+                NULLIF(CONCAT_WS(' ', u.first_name, u.last_name), ''),
+                NULLIF(u.username, ''),
+                u.email
+            ) AS sender_name, 
+            p.name as psychiatrist_name 
      FROM messages m 
      LEFT JOIN users u ON m.sender_id = u.id 
      LEFT JOIN psychiatrists p ON m.psychiatrist_id = p.id 

@@ -16,16 +16,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($user && password_verify($password, $user['password_hash'])) {
             // Successful login
             $_SESSION['user_id'] = $user['id'];
-            $_SESSION['user_name'] = $user['name'];
+            $_SESSION['user_name'] = $user['username']; // Changed from 'name' to 'username'
             $_SESSION['user_email'] = $user['email'];
             
             // Update last login
-            $db->query("UPDATE users SET last_login = datetime('now') WHERE id = ?", [$user['id']]);
+            $db->query("UPDATE users SET last_login = NOW() WHERE id = ?", [$user['id']]);
             
             // Create session record
             $sessionId = generateToken(64);
             $db->query(
-                "INSERT INTO sessions (id, user_id, ip_address, user_agent, expires_at) VALUES (?, ?, ?, ?, datetime('now', '+' || ? || ' seconds'))",
+                "INSERT INTO sessions (id, user_id, ip_address, user_agent, expires_at) VALUES (?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL ? SECOND))",
                 [$sessionId, $user['id'], $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT'], SESSION_LIFETIME]
             );
             

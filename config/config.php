@@ -236,8 +236,19 @@ function getRecentNotifications($limit = 5) {
 function getUserFullName($userId) {
     $db = Database::getInstance();
     try {
-        $row = $db->fetchOne('SELECT name FROM users WHERE id = ?', [$userId]);
-        return $row['name'] ?? 'User';
+        // Prefer full name, then username, then email
+        $row = $db->fetchOne(
+            'SELECT 
+                COALESCE(
+                    NULLIF(name, ''),
+                    NULLIF(CONCAT_WS(" ", first_name, last_name), ''),
+                    NULLIF(username, ''),
+                    email
+                ) AS display_name 
+             FROM users WHERE id = ?',
+            [$userId]
+        );
+        return $row['display_name'] ?? 'User';
     } catch (Exception $e) {
         return 'User';
     }

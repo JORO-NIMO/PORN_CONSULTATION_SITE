@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Create user
             $passwordHash = password_hash($password, PASSWORD_BCRYPT, ['cost' => BCRYPT_COST]);
             $db->query(
-                "INSERT INTO users (name, email, password_hash) VALUES (?, ?, ?)",
+                "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)",
                 [$name, $email, $passwordHash]
             );
             
