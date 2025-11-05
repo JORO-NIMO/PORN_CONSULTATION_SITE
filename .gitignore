@@ -1,0 +1,25 @@
+# Ignore vendor directory
+vendor/
+
+# Ignore configuration files with sensitive information
+config/api_keys.php
+config/database.php
+config.php
+mental-freedom-path/config/config.php
+
+# Ignore other sensitive files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Ignore log files
+*.log
+logs/
+!logs/.gitkeep
+
+# Ignore temporary files
+*.tmp
+*.temp
+*~
