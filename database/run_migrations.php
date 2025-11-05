@@ -6,12 +6,16 @@ require_once __DIR__ . '/../config/database.php';
 // Get database instance
 $db = Database::getInstance();
 
+$migrationsDir = __DIR__ . '/migrations';
+
 // List of migration files in order
 $migrations = [
     '000_create_migrations_table.php',
     '001_create_users_table.php',
     'add_content_management_tables.php',
-    'add_role_to_users_table.php'
+    'add_role_to_users_table.php',
+    '008_create_contact_messages_table.php',
+    '009_create_anonymous_messages_table.php'
 ];
 
 // Create migrations table if it doesn't exist
@@ -25,6 +29,14 @@ $db->query("CREATE TABLE IF NOT EXISTS migrations (
 // Get the current batch number
 $batch = $db->fetchOne("SELECT IFNULL(MAX(batch), 0) + 1 as batch FROM migrations")['batch'];
 
+// Get all migration files from the directory
+$migrationFiles = scandir($migrationsDir);
+$migrationFiles = array_diff($migrationFiles, ['.', '..']); // Remove . and ..
+
+// Get migrations that have already been run
+$runMigrations = $db->fetchAll("SELECT migration FROM migrations");
+$runMigrations = array_column($runMigrations, 'migration');
+
 echo "Starting migrations...\n";
 
 foreach ($migrationFiles as $file) {
@@ -37,28 +49,27 @@ foreach ($migrationFiles as $file) {
     if (!in_array($file, $runMigrations)) {
         echo "Running migration: $file\n";
         
-        // Include the migration file
-        $migrationData = include $migrationPath;
-        
+        // Run the migration in a closure to prevent scope issues
+        $runMigration = function($migrationPath) use ($db, &$file, &$batch) {
+            include $migrationPath;
+            if (function_exists('up')) {
+                up($db);
+            }
+        };
+
         try {
             // Start transaction
             $db->query("START TRANSACTION");
-            
+
             // Run the migration
-            if (is_array($migrationData['up'])) {
-                foreach ($migrationData['up'] as $sql) {
-                    $db->query($sql);
-                }
-            } else {
-                $db->query($migrationData['up']);
-            }
-            
+            $runMigration($migrationPath);
+
             // Record the migration
-            $db->query("INSERT INTO migrations (migration, batch) VALUES (?, ?)", [$migration, $batch]);
-            
+            $db->query("INSERT INTO migrations (migration, batch) VALUES (?, ?)", [$file, $batch]);
+
             // Commit the transaction
             $db->query("COMMIT");
-            echo "✓ $migration completed successfully\n";
+            echo "✓ $file completed successfully\n";
             
         } catch (Exception $e) {
             // Rollback on error

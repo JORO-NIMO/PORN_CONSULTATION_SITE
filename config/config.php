@@ -189,7 +189,7 @@ function getTotalUsers() {
 function getActiveUsersToday() {
     $db = Database::getInstance();
     try {
-        $row = $db->fetchOne("SELECT COUNT(*) AS c FROM users WHERE date(last_login) = date('now')");
+        $row = $db->fetchOne("SELECT COUNT(*) AS c FROM users WHERE DATE(last_login) = CURDATE()");
         return (int)($row['c'] ?? 0);
     } catch (Exception $e) {
         return 0;
@@ -199,7 +199,7 @@ function getActiveUsersToday() {
 function getNewContentCount($days = 7) {
     $db = Database::getInstance();
     try {
-        $row = $db->fetchOne("SELECT COUNT(*) AS c FROM educational_content WHERE datetime(created_at) >= datetime('now', ?)", ['-' . (int)$days . ' days']);
+        $row = $db->fetchOne("SELECT COUNT(*) AS c FROM educational_content WHERE created_at >= DATE_SUB(NOW(), INTERVAL ? DAY)", [(int)$days]);
         return (int)($row['c'] ?? 0);
     } catch (Exception $e) {
         return 0;
@@ -238,14 +238,14 @@ function getUserFullName($userId) {
     try {
         // Prefer full name, then username, then email
         $row = $db->fetchOne(
-            'SELECT 
+            "SELECT 
                 COALESCE(
                     NULLIF(name, ''),
-                    NULLIF(CONCAT_WS(" ", first_name, last_name), ''),
+                    NULLIF(CONCAT_WS(' ', first_name, last_name), ''),
                     NULLIF(username, ''),
                     email
                 ) AS display_name 
-             FROM users WHERE id = ?',
+             FROM users WHERE id = ?",
             [$userId]
         );
         return $row['display_name'] ?? 'User';

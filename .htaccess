@@ -70,7 +70,7 @@ Options -Indexes +FollowSymLinks
     php_value memory_limit 128M
     
     # Error handling
-    php_flag display_errors Off
+    # php_flag display_errors Off
     php_flag log_errors On
     php_value error_log /path/to/php_error.log
     
@@ -235,3 +235,6 @@ FileETag None
 
 # Set default charset
 AddDefaultCharset UTF-8
+# REST API rewrites for therapists directory
+RewriteRule ^api/therapists$ api/therapists.php [L]
+RewriteRule ^api/therapists/(.*)$ api/therapists.php [L]

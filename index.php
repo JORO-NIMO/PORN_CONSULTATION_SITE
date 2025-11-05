@@ -8,6 +8,13 @@ $totalUsers = $db->fetchOne("SELECT COUNT(*) as count FROM users")['count'] ?? 0
 $totalConsultations = $db->fetchOne("SELECT COUNT(*) as count FROM consultations WHERE status = 'completed'")['count'] ?? 0;
 $totalResources = $db->fetchOne("SELECT COUNT(*) as count FROM educational_content")['count'] ?? 0;
 $successRate = $totalConsultations > 0 ? round(($totalConsultations / max($totalUsers, 1)) * 100) : 100;
+// Prepare CardSwap pairs (two items per section)
+require_once __DIR__ . '/includes/api_helpers.php';
+$pc_include = __DIR__ . '/includes/profile_card.php';
+if (file_exists($pc_include)) { require_once $pc_include; }
+$affirmations = getAffirmations(2);
+$zen = getZenQuotes(2);
+$quotes_data = getQuotableQuotes(2);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -143,6 +150,43 @@ $successRate = $totalConsultations > 0 ? round(($totalConsultations / max($total
             <div class="hero-buttons">
                 <a href="auth/register.php" class="btn btn-primary" style="background: white; color: var(--primary);">Join <?php echo SITE_NAME; ?></a>
                 <a href="exercises.php" class="btn btn-secondary" style="background: rgba(255,255,255,0.2); color: white;">Try Breathing Exercises</a>
+            </div>
+        </div>
+    </section>
+    <div class="container" style="display:flex; justify-content:center; margin-top:-2rem; margin-bottom:2rem;">
+        <?php if (function_exists('renderProfileCard')) renderProfileCard([
+            'contactText' => 'Contact Me',
+            'enableTilt' => true,
+            'enableMobileTilt' => false,
+            'showUserInfo' => true,
+        ]); ?>
+    </div>
+    
+    <!-- Motivational Cards (CardSwap) -->
+    <section class="features">
+        <div class="container">
+            <h2 style="text-align:center; margin-bottom: 2rem;">Daily Motivation</h2>
+            <div style="height: 500px; position: relative; margin-bottom: 1rem;">
+                <div class="cardswap" data-card-distance="60" data-vertical-distance="70" data-delay="5000" data-pause-on-hover="false">
+                    <div class="cs-card">
+                        <h3>Affirmations</h3>
+                        <?php foreach ($affirmations as $a): ?>
+                          <p>“<?php echo htmlspecialchars($a); ?>”</p>
+                        <?php endforeach; ?>
+                    </div>
+                    <div class="cs-card">
+                        <h3>ZenQuotes</h3>
+                        <?php foreach ($zen as $z): ?>
+                          <p><?php echo htmlspecialchars($z['q'] ?? ''); ?> — <em><?php echo htmlspecialchars($z['a'] ?? ''); ?></em></p>
+                        <?php endforeach; ?>
+                    </div>
+                    <div class="cs-card">
+                        <h3>Quotable</h3>
+                        <?php foreach ($quotes_data as $q): ?>
+                          <p><?php echo htmlspecialchars($q['content'] ?? ''); ?> — <em><?php echo htmlspecialchars($q['author'] ?? ''); ?></em></p>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

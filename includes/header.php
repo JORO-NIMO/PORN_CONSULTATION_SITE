@@ -26,6 +26,6 @@
 </header>
 
 <div class="app-layout">
-    <?php include __DIR__ . '/sidebar.php'; ?>
+    <?php // include __DIR__ . '/sidebar.php'; ?>
     <div class="app-main">
 

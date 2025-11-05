@@ -32,10 +32,12 @@ define('ENCRYPTION_KEY', 'your-encryption-key'); // Change this to a random stri
 define('JWT_SECRET', 'your-jwt-secret'); // Change this to a random string
 
 // Session configuration
-ini_set('session.cookie_httponly', 1);
-ini_set('session.use_only_cookies', 1);
-ini_set('session.cookie_secure', isset($_SERVER['HTTPS']));
-ini_set('session.cookie_samesite', 'Lax');
+// These settings must be set before session_start()
+// Moving them to public/index.php before session_start() is called
+define('SESSION_COOKIE_HTTPONLY', 1);
+define('SESSION_USE_ONLY_COOKIES', 1);
+define('SESSION_COOKIE_SECURE', isset($_SERVER['HTTPS']));
+define('SESSION_COOKIE_SAMESITE', 'Lax');
 
 // File upload settings
 define('UPLOAD_PATH', dirname(__DIR__) . '/public/uploads');
@@ -43,11 +45,17 @@ define('MAX_UPLOAD_SIZE', 5 * 1024 * 1024); // 5MB
 define('ALLOWED_FILE_TYPES', ['image/jpeg', 'image/png', 'application/pdf']);
 
 // Email configuration
-define('MAIL_HOST', 'smtp.example.com');
-define('MAIL_USERNAME', 'noreply@example.com');
-define('MAIL_PASSWORD', 'your-email-password');
-define('MAIL_FROM', 'noreply@example.com');
-define('MAIL_FROM_NAME', 'Mental Freedom Path');
+// Brevo (Sendinblue) HTTP API key (preferred for sending)
+define('BREVO_API_KEY', getenv('BREVO_API_KEY') ?: 'your-brevo-api-key'); // TODO: Replace with your Brevo API key
+
+// SMTP defaults (optional; for future SMTP usage)
+define('MAIL_HOST', getenv('MAIL_HOST') ?: 'smtp-relay.brevo.com');
+define('MAIL_PORT', getenv('MAIL_PORT') ?: 587);
+define('MAIL_ENCRYPTION', getenv('MAIL_ENCRYPTION') ?: 'tls');
+define('MAIL_USERNAME', getenv('MAIL_USERNAME') ?: 'your-brevo-username'); // TODO: Replace with your Brevo username
+define('MAIL_PASSWORD', getenv('MAIL_PASSWORD') ?: 'your-brevo-password'); // TODO: Replace with your Brevo password
+define('MAIL_FROM', getenv('MAIL_FROM') ?: '9aa637001@smtp-brevo.com');
+define('MAIL_FROM_NAME', getenv('MAIL_FROM_NAME') ?: 'Mental Freedom Path');
 
 // Emergency services
 define('EMERGENCY_PHONE', '911');

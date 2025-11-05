@@ -4,9 +4,12 @@ requireLogin();
 
 $db = Database::getInstance();
 
-// Get all active psychiatrists
+// Fetch scraped psychiatrists from therapists table (by title/specialties containing 'psychiat')
 $psychiatrists = $db->fetchAll(
-    "SELECT * FROM psychiatrists WHERE is_active = 1 ORDER BY rating DESC, total_consultations DESC"
+    "SELECT id, name, title, specialties, city, country, languages, contact_email, phone, profile_url, updated_at 
+     FROM therapists 
+     WHERE (LOWER(title) LIKE '%psychiat%' OR LOWER(specialties) LIKE '%psychiat%')
+     ORDER BY updated_at DESC"
 );
 // Deduplicate by name (case-insensitive, trimmed)
 $seen = [];
@@ -52,52 +55,48 @@ foreach ($psychiatrists as $p) {
                         <div class="psychiatrist-info">
                             <h2><?php echo sanitize($psych['name']); ?></h2>
                             <p class="specialization"><?php echo sanitize($psych['specialization']); ?></p>
-                            <div class="rating">
-                                ⭐ <?php echo number_format($psych['rating'], 2); ?> 
-                                <span class="consultations-count">(<?php echo $psych['total_consultations']; ?> consultations)</span>
+                            <?php if (!empty($psych['city']) || !empty($psych['country'])): ?>
+                            <div class="location">
+                                📍 <?php echo sanitize(trim(($psych['city'] ?? '') . ' ' . ($psych['country'] ?? ''))); ?>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <div class="psychiatrist-body">
-                        <div class="bio">
-                            <h3>About</h3>
-                            <p><?php echo nl2br(sanitize($psych['bio'])); ?></p>
-                        </div>
-                        
-                        <div class="qualifications">
-                            <h3>Qualifications</h3>
-                            <p><?php echo nl2br(sanitize($psych['qualifications'])); ?></p>
-                        </div>
-                        
-                        <div class="experience">
-                            <strong>Experience:</strong> <?php echo $psych['experience_years']; ?> years
-                        </div>
-                        
-                        <?php if ($psych['availability']): ?>
-                        <div class="availability">
-                            <h3>Availability</h3>
-                            <div class="availability-schedule">
-                                <?php 
-                                $availability = json_decode($psych['availability'], true);
-                                foreach ($availability as $day => $hours): 
-                                ?>
-                                <div class="schedule-item">
-                                    <span class="day"><?php echo ucfirst($day); ?>:</span>
-                                    <span class="hours"><?php echo $hours; ?></span>
-                                </div>
-                                <?php endforeach; ?>
-                            </div>
-                        </div>
-                        <?php endif; ?>
-                    </div>
-                    
-                    <div class="psychiatrist-footer">
-                        <a href="book-consultation.php?psychiatrist=<?php echo $psych['id']; ?>" class="btn btn-primary">Book Consultation</a>
-                        <a href="messages.php?to=psychiatrist&id=<?php echo $psych['id']; ?>" class="btn btn-secondary">Send Message</a>
+                            <?php endif; ?>
                     </div>
                 </div>
-                <?php endforeach; ?>
+                
+                <div class="psychiatrist-body">
+                        <?php if (!empty($psych['specialties'])): ?>
+                        <div class="qualifications">
+                            <h3>Specialties</h3>
+                            <p><?php echo nl2br(sanitize($psych['specialties'])); ?></p>
+                        </div>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($psych['languages'])): ?>
+                        <div class="languages">
+                            <strong>Languages:</strong> <?php echo sanitize($psych['languages']); ?>
+                        </div>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($psych['contact_email']) || !empty($psych['phone'])): ?>
+                        <div class="contact">
+                            <h3>Contact</h3>
+                            <?php if (!empty($psych['contact_email'])): ?>
+                                <div>Email: <a href="mailto:<?php echo sanitize($psych['contact_email']); ?>"><?php echo sanitize($psych['contact_email']); ?></a></div>
+                            <?php endif; ?>
+                            <?php if (!empty($psych['phone'])): ?>
+                                <div>Phone: <a href="tel:<?php echo sanitize($psych['phone']); ?>"><?php echo sanitize($psych['phone']); ?></a></div>
+                            <?php endif; ?>
+                        </div>
+                        <?php endif; ?>
+                </div>
+                
+                <div class="psychiatrist-footer">
+                        <?php if (!empty($psych['profile_url'])): ?>
+                        <a href="<?php echo sanitize($psych['profile_url']); ?>" target="_blank" rel="noopener" class="btn btn-secondary">View Source Profile</a>
+                        <?php endif; ?>
+                </div>
+            </div>
+            <?php endforeach; ?>
             </div>
         </div>
     </main>

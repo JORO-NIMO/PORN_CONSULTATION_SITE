@@ -143,6 +143,9 @@ class AuthController extends Controller {
         // Send verification email
         $this->sendVerificationEmail($userId);
         
+        // Send welcome email
+        $this->sendWelcomeEmail($userId);
+        
         $this->session->setFlash('success', 'Registration successful! Please check your email to verify your account.');
         $this->redirect('/login');
     }
@@ -212,6 +215,28 @@ class AuthController extends Controller {
             [
                 'name' => $user->first_name,
                 'verificationUrl' => $verificationUrl
+            ]
+        );
+    }
+    
+    /**
+     * Send welcome email
+     */
+    protected function sendWelcomeEmail($userId) {
+        $user = $this->userModel->find($userId);
+        
+        if (!$user) {
+            return false;
+        }
+        
+        $mailer = new Mailer();
+        return $mailer->send(
+            $user->email,
+            'Welcome to Mental Freedom Path - Thank You for Signing Up!',
+            'emails/welcome',
+            [
+                'name' => $user->first_name . ' ' . $user->last_name,
+                'email' => $user->email
             ]
         );
     }

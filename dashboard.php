@@ -16,7 +16,7 @@ $upcomingConsultations = $db->fetchAll(
     "SELECT c.*, p.name as psychiatrist_name, p.specialization 
      FROM consultations c 
      JOIN psychiatrists p ON c.psychiatrist_id = p.id 
-     WHERE c.user_id = ? AND c.status = 'scheduled' AND c.scheduled_time > datetime('now') 
+     WHERE c.user_id = ? AND c.status = 'scheduled' AND c.scheduled_time > NOW() 
      ORDER BY c.scheduled_time ASC LIMIT 3",
     [$_SESSION['user_id']]
 );

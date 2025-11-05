@@ -92,6 +92,12 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                     Settings
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link <?php echo $currentPage === 'scrapes.php' ? 'active' : ''; ?>" href="scrapes.php">
+                    <i class="fas fa-sync me-2"></i>
+                    Scraper Runs
+                </a>
+            </li>
             
             <li class="nav-item">
                 <a class="nav-link" href="/" target="_blank">

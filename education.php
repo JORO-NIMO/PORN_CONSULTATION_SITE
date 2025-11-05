@@ -2,6 +2,41 @@
 require_once 'config/config.php';
 requireLogin();
 
+// Function to fetch Wikipedia summary with caching
+function getWikipediaSummary($topic, $cache_duration = 1800) { // 30 minutes cache
+    $cache_file = __DIR__ . '/data/cache/' . preg_replace('/[^a-zA-Z0-9_-]/i', '_', $topic) . '.json';
+
+    if (file_exists($cache_file) && (time() - filemtime($cache_file)) < $cache_duration) {
+        return json_decode(file_get_contents($cache_file), true);
+    }
+
+    $apiUrl = "https://en.wikipedia.org/api/rest_v1/page/summary/" . urlencode($topic);
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $apiUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'MyMentalHealthApp/1.0 (https://example.com; mail@example.com)');
+    $json = curl_exec($ch);
+    curl_close($ch);
+
+    $data = json_decode($json, true);
+
+    if (isset($data['title']) && isset($data['extract'])) {
+        file_put_contents($cache_file, $json);
+        return $data;
+    }
+
+    return null;
+}
+
+$wiki_topics = ['Depression_(mood)', 'Anxiety', 'Cognitive_behavioral_therapy', 'Mindfulness'];
+$wiki_summaries = [];
+foreach ($wiki_topics as $topic) {
+    $summary = getWikipediaSummary($topic);
+    if ($summary) {
+        $wiki_summaries[] = $summary;
+    }
+}
+
 $db = Database::getInstance();
 
 // Get single content if ID provided
@@ -85,6 +120,22 @@ $latestContent = $db->fetchAll("SELECT * FROM educational_content ORDER BY creat
                 <h1>Educational Resources</h1>
                 <p class="subtitle">Learn about the science, effects, and recovery from pornography addiction</p>
             </div>
+
+            <!-- Wikipedia Summaries -->
+            <section class="content-section">
+                <h2>Quick Overviews from Wikipedia</h2>
+                <div class="content-grid">
+                    <?php foreach ($wiki_summaries as $summary): ?>
+                    <div class="content-card">
+                        <h3><?php echo sanitize($summary['title']); ?></h3>
+                        <p><?php echo substr(sanitize($summary['extract']), 0, 200); ?>...</p>
+                        <div class="card-footer">
+                            <a href="<?php echo sanitize($summary['content_urls']['desktop']['page']); ?>" class="btn btn-link" target="_blank" rel="noopener">Read More on Wikipedia →</a>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </section>
             
             <!-- Animated Slideshow Section -->
             <section class="slideshow-section">

@@ -1,5 +1,9 @@
 <?php
 require_once __DIR__ . '/config/config.php';
+$api_helpers = __DIR__ . '/includes/api_helpers.php';
+if (file_exists($api_helpers)) {
+    require_once $api_helpers;
+}
 $db = Database::getInstance();
 $q = trim($_GET['q'] ?? '');
 $results = [];
@@ -67,6 +71,48 @@ if ($q !== '' && GOOGLE_API_KEY && GOOGLE_CX) {
         </ul>
     <?php endif; ?>
 </main>
+<section class="features">
+    <div class="container">
+        <h2 style="text-align:center; margin-bottom: 1rem;">Quick Inspiration</h2>
+        <div style="height: 480px; position: relative;">
+            <div class="cardswap" data-card-distance="60" data-vertical-distance="70" data-delay="5000" data-pause-on-hover="false">
+                <div class="cs-card">
+                    <h3>Affirmations</h3>
+                    <?php if (function_exists('getAffirmations')): $affirmations = getAffirmations(2); foreach ($affirmations as $a): ?>
+                        <p>“<?php echo htmlspecialchars($a); ?>”</p>
+                    <?php endforeach; endif; ?>
+                </div>
+                <div class="cs-card">
+                    <h3>ZenQuotes</h3>
+                    <?php if (function_exists('getZenQuotes')): $zen = getZenQuotes(2); foreach ($zen as $z): ?>
+                        <p><?php echo htmlspecialchars($z['q'] ?? ''); ?> — <em><?php echo htmlspecialchars($z['a'] ?? ''); ?></em></p>
+                    <?php endforeach; endif; ?>
+                </div>
+                <div class="cs-card">
+                    <h3>Quotable</h3>
+                    <?php if (function_exists('getQuotableQuotes')): $quotes_data = getQuotableQuotes(2); foreach ($quotes_data as $qit): ?>
+                        <p><?php echo htmlspecialchars($qit['content'] ?? ''); ?> — <em><?php echo htmlspecialchars($qit['author'] ?? ''); ?></em></p>
+                    <?php endforeach; endif; ?>
+                </div>
+                <div class="cs-card">
+                    <h3>Wikipedia</h3>
+                    <?php if (function_exists('getWikipediaSummary')): $wiki1 = getWikipediaSummary('Mindfulness'); $wiki2 = getWikipediaSummary('Cognitive behavioral therapy'); ?>
+                        <p><?php echo htmlspecialchars($wiki1); ?></p>
+                        <p><?php echo htmlspecialchars($wiki2); ?></p>
+                    <?php endif; ?>
+                </div>
+                <div class="cs-card">
+                    <h3>The Guardian</h3>
+                    <?php if (function_exists('getGuardianArticles')): $guardian = getGuardianArticles('wellbeing', 2); foreach ($guardian as $g): ?>
+                        <p><a href="<?php echo htmlspecialchars($g['url']); ?>" target="_blank" rel="noopener" style="text-decoration:none; color:inherit;">
+                            <?php echo htmlspecialchars($g['title']); ?>
+                        </a></p>
+                    <?php endforeach; endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 <?php include __DIR__ . '/includes/footer.php'; ?>
 </body>
 </html>

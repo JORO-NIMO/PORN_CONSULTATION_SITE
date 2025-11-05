@@ -137,3 +137,8 @@ if (typeof partnersInitialized === 'undefined') {
     });
 }
 </script>
+
+<!-- CardSwap animation -->
+<script src="/assets/js/cardswap.js"></script>
+<!-- ProfileCard interaction -->
+<script src="/assets/js/profilecard.js"></script>

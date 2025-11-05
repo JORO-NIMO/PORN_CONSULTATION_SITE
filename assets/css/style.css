@@ -38,9 +38,9 @@ body {
 }
 
 .container {
-    max-width: 1200px;
+    max-width: 1280px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1.5rem;
 }
 
 /* Header */
@@ -109,12 +109,13 @@ nav a:hover {
 /* Global app layout with sidebar */
 .app-layout {
     display: grid;
-    grid-template-columns: 260px 1fr;
+    grid-template-columns: 1fr; /* default single column when no sidebar */
     gap: 1rem;
-    max-width: 1200px;
+    max-width: 1280px;
     margin: 0 auto;
     padding: 0 1rem;
 }
+.app-layout.with-sidebar { grid-template-columns: 260px 1fr; }
 
 .app-sidebar {
     position: sticky;
@@ -158,13 +159,13 @@ nav a:hover {
 
 .auth-container {
     width: 100%;
-    max-width: 450px;
+    max-width: 960px;
 }
 
 .auth-card {
     background: white;
     border-radius: 16px;
-    padding: 3rem;
+    padding: 2rem;
     box-shadow: var(--shadow-lg);
     animation: slideUp 0.5s ease-out;
 }
@@ -292,7 +293,7 @@ nav a:hover {
 .page-hero { 
     background: linear-gradient(135deg, rgba(99, 102, 241, 0.95) 0%, rgba(139, 92, 246, 0.95) 50%, rgba(6, 182, 212, 0.95) 100%);
     color: #fff;
-    padding: 1rem 0.5rem;
+    padding: 1.25rem 0.75rem;
     box-shadow: 0 6px 20px rgba(99, 102, 241, 0.25);
 }
 .page-hero h1, .page-hero h2, .page-hero p { color: #fff; margin: 0.25rem 0; }
@@ -985,4 +986,180 @@ nav a:hover {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+/* --- Card Components & Testimonials Polishing --- */
+.page-header { margin-bottom: 1.5rem; }
+.page-header h1 { color: var(--dark); }
+.page-header .subtitle { color: #fff; }
+
+[style*="background-color: var(--primary)"] { color: #fff; }
+
+.content-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.card {
+    background: #ffffff;
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+.card-header {
+    background: var(--light-purple);
+    color: var(--dark);
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+}
+.card-body { padding: 1rem; }
+.card-link { color: var(--primary); text-decoration: none; }
+.card-link:hover { color: var(--primary-dark); text-decoration: underline; }
+
+/* Quotes list styling */
+.quote-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.75rem; }
+.quote-item { background: #fff; border: 1px solid rgba(99, 102, 241, 0.08); border-radius: 10px; padding: 0.75rem; box-shadow: var(--shadow); }
+.quote-item blockquote { margin: 0; font-size: 1rem; color: var(--text); border-left: 3px solid var(--primary); padding-left: 0.5rem; }
+.quote-author { margin-top: 0.5rem; color: var(--text-light); font-style: italic; text-align: right; }
+
+/* Affirmation text refinement */
+.affirmation { font-size: 1.1rem; color: var(--text); }
+
+/* Testimonials page tweaks */
+.testimonials-page .container { padding-top: 1rem; }
+
+@media (max-width: 768px) {
+    .page-header { text-align: center; }
+}
+/* Testimonials Page */
+.testimonials-page .page-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.testimonials-page .main-content {
+    flex: 3;
+    min-width: 300px;
+}
+
+.testimonials-page .sidebar {
+    flex: 1;
+    min-width: 250px;
+    background: #ffffff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: var(--shadow);
+    align-self: flex-start;
+}
+
+.testimonials-page .sidebar h3 {
+    margin-top: 0;
+    font-size: 1.25rem;
+    color: var(--dark);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.testimonials-page .affirmation {
+    font-size: 1.05rem;
+    font-style: italic;
+    color: var(--text-light);
+}
+
+.testimonials-page .quotes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.testimonials-page .quote-card {
+    background: #ffffff;
+    border: 1px solid rgba(99, 102, 241, 0.12);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: var(--shadow);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.testimonials-page .quote-card blockquote {
+    margin: 0;
+    font-size: 1.05rem;
+    color: var(--text);
+    border-left: 4px solid var(--primary);
+    padding-left: 0.75rem;
+    flex-grow: 1;
+}
+
+.testimonials-page .quote-card footer {
+    margin-top: 0.75rem;
+    font-size: 0.95rem;
+    color: var(--text-light);
+    text-align: right;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .testimonials-page .page-container {
+        gap: 0.75rem;
+    }
+    .testimonials-page .sidebar {
+        order: -1;
+        width: 100%;
+    }
+}
+/* Global layout to ensure content fills the viewport */
+html, body { min-height: 100%; }
+body { display: flex; flex-direction: column; min-height: 100vh; }
+main { flex: 1 0 auto; }
+/* CardSwap component */
+.cardswap {
+  position: relative;
+  height: 600px; /* can be overridden inline */
+  margin: 0 auto; /* center horizontally in container */
+}
+.cardswap .cs-card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: min(100%, 520px);
+  background: #fff;
+  border: 1px solid rgba(99,102,241,0.12);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 1.25rem;
+  transition: transform 600ms ease, opacity 600ms ease;
+}
+.cardswap .cs-card h3 { margin-top: 0; color: var(--primary); }
+.cardswap .cs-card p { color: var(--text); }
+/* ProfileCard component */
+.profile-card {
+  width: 320px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid rgba(99,102,241,0.12);
+  box-shadow: var(--shadow-lg);
+  transition: var(--transition);
+  will-change: transform;
+  perspective: 800px;
+}
+.profile-card .pc-inner { padding: 1rem; display: flex; align-items: center; gap: 1rem; }
+.profile-card .pc-avatar img { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary); }
+.profile-card .pc-info { flex: 1; min-width: 0; }
+.profile-card .pc-name { font-weight: 700; color: var(--dark); }
+.profile-card .pc-title { font-size: .9rem; color: var(--text-light); }
+.profile-card .pc-handle { font-size: .85rem; color: var(--muted); }
+.profile-card .pc-status { margin-top: .25rem; display: inline-block; padding: .25rem .5rem; border-radius: 999px; background: var(--light-purple); color: var(--primary); font-size: .8rem; }
+.profile-card .pc-actions { display:flex; align-items:center; }
+.profile-card .pc-contact { padding: .5rem .75rem; }
+
+@media (max-width:768px) {
+  .profile-card { width: 100%; }
 }

@@ -116,9 +116,6 @@ function runMigrations($db, $migrationsDir) {
     $batch = getNextBatch($db);
     $count = 0;
     
-    // Start transaction
-    $db->beginTransaction();
-    
     try {
         foreach ($pendingMigrations as $migration) {
             $migrationName = pathinfo($migration, PATHINFO_FILENAME);
@@ -154,15 +151,9 @@ function runMigrations($db, $migrationsDir) {
             $count++;
         }
         
-        // Commit the transaction
-        $db->commit();
-        
         echo "\nMigrations completed successfully. $count migration(s) were run.\n";
         
     } catch (Exception $e) {
-        // Rollback the transaction on error
-        $db->rollBack();
-        
         echo "FAILED\n\n";
         echo "Error: " . $e->getMessage() . "\n";
         

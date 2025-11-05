@@ -24,13 +24,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($existing) {
             $errors[] = 'Email already registered';
         } else {
-            // Create user
+            // Create user with role and timestamps
             $passwordHash = password_hash($password, PASSWORD_BCRYPT, ['cost' => BCRYPT_COST]);
             $db->query(
-                "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)",
+                "INSERT INTO users (username, email, password_hash, role, created_at) VALUES (?, ?, ?, 'user', NOW())",
                 [$name, $email, $passwordHash]
             );
-            
+
+            // Send welcome email to user and notify admin
+            try {
+                require_once __DIR__ . '/../includes/mail_helper.php';
+                $siteName = defined('SITE_NAME') ? SITE_NAME : 'Our Site';
+                $welcomeHtml = '<h2>Welcome to ' . htmlspecialchars($siteName) . '</h2>' .
+                               '<p>Hi ' . htmlspecialchars($name) . ',</p>' .
+                               '<p>Your account has been created successfully. You can login anytime:</p>' .
+                               '<p><a href="' . htmlspecialchars(SITE_URL) . '/auth/login.php">Login</a></p>' .
+                               '<p>— ' . htmlspecialchars($siteName) . ' Team</p>';
+                @send_mail_safe($email, 'Welcome to ' . $siteName, $welcomeHtml);
+
+                // Admin notification
+                if (defined('ADMIN_EMAIL') && filter_var(ADMIN_EMAIL, FILTER_VALIDATE_EMAIL)) {
+                    $adminHtml = '<p>New user registered:</p>' .
+                                 '<ul><li>Name: ' . htmlspecialchars($name) . '</li>' .
+                                 '<li>Email: ' . htmlspecialchars($email) . '</li></ul>' .
+                                 '<p>Time: ' . date('Y-m-d H:i:s') . '</p>';
+                    @send_mail_safe(ADMIN_EMAIL, '[' . $siteName . '] New user signup', $adminHtml);
+                }
+            } catch (Throwable $e) {
+                error_log('Welcome/Admin mail error: ' . $e->getMessage());
+            }
+
             $success = true;
             
             if (isAjax()) {
@@ -51,22 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - <?php echo SITE_NAME; ?></title>
     <link rel="stylesheet" href="../assets/css/style.css">
-    <style>
-    .auth-container {
-        max-width: 75% !important;
-        width: 75% !important;
-    }
-    .auth-card {
-        max-width: 100% !important;
-        width: 100% !important;
-    }
-    @media (max-width: 768px) {
-        .auth-container {
-            max-width: 95% !important;
-            width: 95% !important;
-        }
-    }
-    </style>
+    
 </head>
 <body class="auth-page">
     <div class="auth-container">
