@@ -117,7 +117,7 @@
         'https://nappy.co/wp-content/uploads/2022/07/nappy-1658422631-2.jpg',
         'https://nappy.co/wp-content/uploads/2022/07/nappy-1658422631-3.jpg',
         'https://nappy.co/wp-content/uploads/2022/07/nappy-1658422631-4.jpg',
-        'https://nappy.co/wp-content/uploads/2022/07/nappy-1658422631-5.jpg'
+        'https://nappy.co/wp-content/uploads/2022/07/nappy-1658422631-6.jpg' // Replaced problematic image
     ];
 
     let currentImageIndex = 0;
