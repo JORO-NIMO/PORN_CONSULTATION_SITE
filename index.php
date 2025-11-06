@@ -168,6 +168,9 @@ $quotes_data = getQuotableQuotes(2);
             <h2 style="text-align:center; margin-bottom: 2rem;">Daily Motivation</h2>
             <div class="motivation-container">
                 <div class="lightning-bg"></div>
+                <div class="motivation-image-container">
+                    <img id="motivation-image" src="" alt="Daily Motivation" style="width:100%; height:auto; border-radius: 8px; object-fit: cover;">
+                </div>
                 <div class="cardswap" data-card-distance="60" data-vertical-distance="70" data-delay="8000" data-pause-on-hover="false">
                     <div class="cs-card">
                         <h3>Affirmations</h3>

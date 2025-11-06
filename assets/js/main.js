@@ -110,4 +110,31 @@
     
     // Expose showAlert globally
     window.showAlert = showAlert;
+
+    // Daily Motivation Image Rotator
+    const motivationImages = [
+        'https://nappy.co/wp-content/uploads/2022/07/nappy-1658422631-1.jpg',
+        'https://nappy.co/wp-content/uploads/2022/07/nappy-1658422631-2.jpg',
+        'https://nappy.co/wp-content/uploads/2022/07/nappy-1658422631-3.jpg',
+        'https://nappy.co/wp-content/uploads/2022/07/nappy-1658422631-4.jpg',
+        'https://nappy.co/wp-content/uploads/2022/07/nappy-1658422631-5.jpg'
+    ];
+
+    let currentImageIndex = 0;
+    const motivationImageElement = document.getElementById('motivation-image');
+
+    function changeMotivationImage() {
+        if (motivationImageElement) {
+            currentImageIndex = (currentImageIndex + 1) % motivationImages.length;
+            motivationImageElement.src = motivationImages[currentImageIndex];
+        }
+    }
+
+    // Initial image load
+    if (motivationImageElement) {
+        motivationImageElement.src = motivationImages[currentImageIndex];
+    }
+
+    // Change image every 5 minutes (300000 milliseconds)
+    setInterval(changeMotivationImage, 300000);
 })();
