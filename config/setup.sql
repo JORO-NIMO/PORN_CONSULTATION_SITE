@@ -146,6 +146,69 @@ CREATE TABLE IF NOT EXISTS sessions (
     INDEX idx_expires (expires_at)
 ) ENGINE=InnoDB;
 
+-- User activities table for logging
+CREATE TABLE IF NOT EXISTS user_activities (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    activity VARCHAR(255) NOT NULL,
+    status ENUM('success', 'failed', 'pending') DEFAULT 'success',
+    ip_address VARCHAR(45),
+    user_agent VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user (user_id),
+    INDEX idx_created (created_at),
+    INDEX idx_status (status)
+) ENGINE=InnoDB;
+
+-- Content categories table
+CREATE TABLE IF NOT EXISTS content_categories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_slug (slug)
+) ENGINE=InnoDB;
+
+-- Content table for articles and posts
+CREATE TABLE IF NOT EXISTS content (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    content TEXT NOT NULL,
+    excerpt TEXT,
+    category_id INT,
+    featured_image VARCHAR(500),
+    status ENUM('draft', 'published', 'archived') DEFAULT 'draft',
+    views INT DEFAULT 0,
+    created_by INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (category_id) REFERENCES content_categories(id) ON DELETE SET NULL,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_status (status),
+    INDEX idx_category (category_id),
+    INDEX idx_created (created_at)
+) ENGINE=InnoDB;
+
+-- Media library table
+CREATE TABLE IF NOT EXISTS media (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    filename VARCHAR(255) NOT NULL,
+    original_name VARCHAR(255),
+    mime_type VARCHAR(100),
+    size INT,
+    path VARCHAR(500) NOT NULL,
+    alt_text VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user (user_id),
+    INDEX idx_created (created_at)
+) ENGINE=InnoDB;
+
 -- Insert sample psychiatrists
 INSERT INTO psychiatrists (name, specialization, bio, qualifications, experience_years, email, phone, availability, rating, is_active) VALUES
 ('Dr. Sarah Mitchell', 'Addiction & Behavioral Health', 'Specialized in treating behavioral addictions including pornography addiction. Compassionate, evidence-based approach.', 'PhD Clinical Psychology, Certified Addiction Specialist', 12, 'dr.mitchell@example.com', '+256700111222', '{"monday": "9:00-17:00", "wednesday": "9:00-17:00", "friday": "9:00-17:00"}', 4.85, TRUE),

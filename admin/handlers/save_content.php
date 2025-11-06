@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/../../config/database.php';
 require_once __DIR__ . '/../../includes/auth_helpers.php';
+require_once __DIR__ . '/../../includes/helpers.php';
 
 // Ensure user is admin and it's a POST request
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isAdmin()) {
@@ -15,6 +16,10 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 try {
+    // CSRF validation
+    if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
+        throw new Exception('Invalid request token');
+    }
     // Validate required fields
     $required = ['title', 'content'];
     $errors = [];
@@ -145,14 +150,4 @@ try {
         header('Location: ../content.php');
     }
     exit();
-}
-
-/**
- * Create a URL-friendly slug from a string
- */
-function createSlug($string) {
-    $string = preg_replace('/[^\p{L}0-9\s-]/u', '', $string); // Remove special chars
-    $string = str_replace(' ', '-', $string); // Replace spaces with -
-    $string = preg_replace('/-+/', '-', $string); // Replace multiple - with single -
-    return strtolower($string);
 }

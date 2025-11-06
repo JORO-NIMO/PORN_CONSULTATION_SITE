@@ -40,7 +40,6 @@ $sentMessages = $db->fetchAll(
 $receivedMessages = $db->fetchAll(
     "SELECT m.*, 
             COALESCE(
-                NULLIF(u.name, ''),
                 NULLIF(CONCAT_WS(' ', u.first_name, u.last_name), ''),
                 NULLIF(u.username, ''),
                 u.email

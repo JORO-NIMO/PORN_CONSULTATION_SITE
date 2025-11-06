@@ -21,7 +21,25 @@
                 <?php echo SITE_TAGLINE; ?>
             </div>
         </div>
-        
+        <nav class="site-nav" style="display:flex; gap: 0.75rem; align-items:center;">
+            <a href="index.php">Home</a>
+            <a href="education.php">Education</a>
+            <a href="psychiatrists.php">Psychiatrists</a>
+            <a href="messages.php">Messages</a>
+            <a href="anonymous-messaging.php">Anonymous Message</a>
+            <a href="contact.php">Contact</a>
+            <?php if (isLoggedIn()): ?>
+                <?php if (isAdmin()): ?>
+                    <a href="admin/dashboard.php">Admin</a>
+                <?php else: ?>
+                    <a href="dashboard.php">Dashboard</a>
+                <?php endif; ?>
+                <a href="auth/logout.php">Logout</a>
+            <?php else: ?>
+                <a href="login.php">Login</a>
+                <a href="register.php">Register</a>
+            <?php endif; ?>
+        </nav>
     </div>
 </header>
 

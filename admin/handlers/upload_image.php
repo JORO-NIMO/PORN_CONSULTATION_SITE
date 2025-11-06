@@ -14,6 +14,17 @@ if (!isAdmin()) {
     exit();
 }
 
+// CSRF validation supports token in header for AJAX
+if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
+    http_response_code(403);
+    header('Content-Type: application/json');
+    echo json_encode([
+        'uploaded' => false,
+        'error' => ['message' => 'Invalid request token']
+    ]);
+    exit();
+}
+
 // Check if file was uploaded without errors
 if (!isset($_FILES['upload']) || $_FILES['upload']['error'] !== UPLOAD_ERR_OK) {
     $error = 'No file was uploaded or there was an upload error.';
@@ -68,26 +79,51 @@ if ($file_size > $max_size) {
     exit();
 }
 
+// Validate MIME type using finfo and ensure it is an image
+$finfo = new finfo(FILEINFO_MIME_TYPE);
+$mime = $finfo->file($file_tmp) ?: '';
+if (strpos($mime, 'image/') !== 0) {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'uploaded' => false,
+        'error' => ['message' => 'Invalid file type. Only images are allowed.']
+    ]);
+    exit();
+}
+
+// Additional image integrity check
+$imgInfo = @getimagesize($file_tmp);
+if ($imgInfo === false) {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'uploaded' => false,
+        'error' => ['message' => 'Uploaded file is not a valid image.']
+    ]);
+    exit();
+}
+
 // Create upload directory if it doesn't exist
 $upload_dir = __DIR__ . '/../../uploads/editor/' . date('Y/m/');
 if (!file_exists($upload_dir)) {
     mkdir($upload_dir, 0755, true);
 }
 
-// Generate unique filename
-$new_filename = uniqid() . '_' . preg_replace('/[^\w\d\._\-]/', '_', $file_name);
+// Generate cryptographically random filename preserving extension
+$new_filename = bin2hex(random_bytes(12)) . '.' . $file_ext;
 $destination = $upload_dir . $new_filename;
 $relative_path = 'uploads/editor/' . date('Y/m/') . $new_filename;
 
 // Move the file to the upload directory
 if (move_uploaded_file($file_tmp, $destination)) {
+    // Set safe permissions (ignored on Windows)
+    @chmod($destination, 0644);
     // Save to media library
     try {
         $db->insert('media', [
             'user_id' => $_SESSION['user_id'],
             'filename' => $new_filename,
             'original_name' => $file_name,
-            'mime_type' => mime_content_type($destination),
+            'mime_type' => $mime,
             'size' => $file_size,
             'path' => $relative_path,
             'alt_text' => pathinfo($file_name, PATHINFO_FILENAME),

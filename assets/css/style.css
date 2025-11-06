@@ -132,11 +132,34 @@ nav a:hover {
 
 .app-main {
     min-width: 0;
+    padding: 1rem 0; /* breathing room for content */
 }
 
 .side-nav { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
 .side-nav a { display: block; padding: 0.6rem 0.75rem; border-radius: 8px; text-decoration: none; color: var(--text); transition: var(--transition); }
 .side-nav a:hover { background: #f5f3ff; color: var(--primary); }
+
+/* Flexible content frames for consistent fit */
+.content-frame {
+    background: #ffffff;
+    border: 1px solid rgba(99,102,241,0.12);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 1rem;
+}
+
+.page-section {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+/* Ensure images and embeds scale nicely */
+img, video, iframe { max-width: 100%; height: auto; }
+
+/* Balanced spacing inside app layout */
+.app-main > * + * { margin-top: 1rem; }
 
 
 /* Collapsed behavior - user adjustable */
@@ -1001,6 +1024,10 @@ nav a:hover {
     gap: 1rem;
 }
 
+/* Frame variants for denser content pages */
+.frame-tight { padding: 0.75rem; }
+.frame-loose { padding: 1.5rem; }
+
 .card {
     background: #ffffff;
     border: 1px solid rgba(99, 102, 241, 0.12);
@@ -1119,26 +1146,110 @@ nav a:hover {
 html, body { min-height: 100%; }
 body { display: flex; flex-direction: column; min-height: 100vh; }
 main { flex: 1 0 auto; }
+/* Daily Motivation Section with Lightning Animation */
+.daily-motivation {
+  position: relative;
+  padding: 4rem 0;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  color: white;
+}
+
+.daily-motivation .container {
+  position: relative;
+  z-index: 2;
+}
+
+.daily-motivation h2 {
+  color: white !important;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+}
+
+.motivation-container {
+  position: relative;
+  height: 500px;
+  margin-bottom: 1rem;
+}
+
+.lightning-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+  overflow: hidden;
+}
+
+.lightning-bg::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  right: -50%;
+  bottom: -50%;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(99, 102, 241, 0.3) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.3) 0%, transparent 50%);
+  animation: lightningStorm 15s ease-in-out infinite;
+  filter: blur(40px);
+}
+
+@keyframes lightningStorm {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(2deg) scale(1.1); }
+  50% { transform: rotate(-1deg) scale(0.9); }
+  75% { transform: rotate(1deg) scale(1.05); }
+}
+
 /* CardSwap component */
 .cardswap {
   position: relative;
-  height: 600px; /* can be overridden inline */
-  margin: 0 auto; /* center horizontally in container */
+  height: 600px;
+  margin: 0 auto;
+  z-index: 3;
 }
+
 .cardswap .cs-card {
   position: absolute;
   top: 0;
   left: 0;
   width: min(100%, 520px);
-  background: #fff;
-  border: 1px solid rgba(99,102,241,0.12);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   border-radius: 12px;
-  box-shadow: var(--shadow);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(99, 102, 241, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
   padding: 1.25rem;
-  transition: transform 600ms ease, opacity 600ms ease;
+  transition: transform 800ms ease, opacity 800ms ease;
+  backdrop-filter: blur(10px);
 }
-.cardswap .cs-card h3 { margin-top: 0; color: var(--primary); }
-.cardswap .cs-card p { color: var(--text); }
+
+.cardswap .cs-card h3 { 
+  margin-top: 0; 
+  color: var(--primary);
+  text-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+}
+
+.cardswap .cs-card p { 
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.cardswap .cs-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+  border-radius: 12px;
+  pointer-events: none;
+}
+
 /* ProfileCard component */
 .profile-card {
   width: 320px;

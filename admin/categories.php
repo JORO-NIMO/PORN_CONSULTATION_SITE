@@ -2,6 +2,7 @@
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/auth_helpers.php';
+require_once __DIR__ . '/../includes/helpers.php';
 
 // Ensure user is admin
 requireAdmin();
@@ -12,6 +13,13 @@ require_once 'includes/header.php';
 
 // Handle form submission for adding/editing categories
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Validate CSRF token for all POST requests
+    if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
+        $_SESSION['error'] = 'Invalid CSRF token.';
+        header('Location: ' . $_SERVER['HTTP_REFERER']);
+        exit();
+    }
+
     try {
         if (isset($_POST['add_category'])) {
             // Add new category
@@ -227,6 +235,7 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
                                                             <i class="fas fa-edit"></i>
                                                         </a>
                                                         <form action="categories.php" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this category? This action cannot be undone.');">
+                                                            <input type="hidden" name="csrf_token" value="<?= generateCSRFToken(); ?>">
                                                             <input type="hidden" name="category_id" value="<?= $category['id'] ?>">
                                                             <button type="submit" name="delete_category" class="btn btn-sm btn-outline-danger" title="Delete">
                                                                 <i class="fas fa-trash"></i>
@@ -248,13 +257,5 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
 </div>
 
 <?php 
-// Function to create URL-friendly slug
-function createSlug($string) {
-    $string = preg_replace('/[^\p{L}0-9\s-]/u', '', $string); // Remove special chars
-    $string = str_replace(' ', '-', $string); // Replace spaces with -
-    $string = preg_replace('/-+/', '-', $string); // Replace multiple - with single -
-    return strtolower($string);
-}
-
 require_once 'includes/footer.php'; 
 ?>

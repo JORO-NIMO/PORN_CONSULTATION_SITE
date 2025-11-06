@@ -83,6 +83,7 @@ $categories = $db->select('SELECT * FROM content_categories ORDER BY name');
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <form action="handlers/delete_content.php" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this content?');">
+                                            <input type="hidden" name="csrf_token" value="<?= generateCSRFToken(); ?>">
                                             <input type="hidden" name="content_id" value="<?= $item['id'] ?>">
                                             <button type="submit" class="btn btn-sm btn-outline-danger">
                                                 <i class="fas fa-trash"></i>
@@ -105,6 +106,7 @@ $categories = $db->select('SELECT * FROM content_categories ORDER BY name');
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <form action="handlers/save_content.php" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="csrf_token" value="<?= generateCSRFToken(); ?>">
                 <div class="modal-header">
                     <h5 class="modal-title" id="addContentModalLabel">Add New Content</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

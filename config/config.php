@@ -71,15 +71,90 @@ define('LOGIN_LOCKOUT_TIME', 900); // 15 minutes
 // Timezone
 date_default_timezone_set('Africa/Kampala');
 
-// Error reporting (disable in production)
+// Error reporting and robust global handlers
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
+
+// Centralized error/exception handling for consistent UX
+if (!function_exists('handleException')) {
+    function handleException($e) {
+        try {
+            $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+            $errorId = bin2hex(random_bytes(8));
+            error_log('[ERR ' . $errorId . '] ' . $e->getMessage() . "\n" . $e->getTraceAsString());
+            if ($isAjax) {
+                http_response_code(500);
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => 'An unexpected error occurred.', 'error_id' => $errorId]);
+                exit;
+            }
+            // Avoid header issues if output already started
+            if (!headers_sent()) {
+                header('Location: /error.php?code=' . urlencode($errorId));
+                exit;
+            }
+            echo '<p>Something went wrong. Error ID: ' . htmlspecialchars($errorId) . '</p>';
+            exit;
+        } catch (Throwable $inner) {
+            // Last resort
+            echo '<p>Unexpected error.</p>';
+            exit;
+        }
+    }
+}
+
+if (!function_exists('handleError')) {
+    function handleError($severity, $message, $file, $line) {
+        // Respect @ operator
+        if (!(error_reporting() & $severity)) {
+            return;
+        }
+        throw new ErrorException($message, 0, $severity, $file, $line);
+    }
+}
+
+if (!function_exists('handleShutdown')) {
+    function handleShutdown() {
+        $err = error_get_last();
+        if ($err && in_array($err['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR])) {
+            handleException(new ErrorException($err['message'] ?? 'Fatal error', 0, $err['type'], $err['file'] ?? 'unknown', $err['line'] ?? 0));
+        }
+    }
+}
+
+set_error_handler('handleError');
+set_exception_handler('handleException');
+register_shutdown_function('handleShutdown');
 
 // Baseline security headers (safe defaults)
 if (!headers_sent()) {
     header('X-Content-Type-Options: nosniff');
     header('X-Frame-Options: SAMEORIGIN');
     header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Cross-Origin-Opener-Policy: same-origin');
+    header('Cross-Origin-Resource-Policy: same-origin');
+    header('Permissions-Policy: geolocation=(), autoplay=(), camera=(self), microphone=(self), payment=()');
+    
+    // Content Security Policy tuned for this app
+    // Allow self resources, common CDNs used in admin, and data URIs for images
+    $csp = [
+        "default-src 'self'",
+        // Stylesheets from Bootstrap/DataTables/CDNJS/Google Fonts
+        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://cdn.datatables.net https://fonts.googleapis.com",
+        // Scripts (keep inline for some legacy scripts; consider removing 'unsafe-inline' later)
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://code.jquery.com https://cdn.datatables.net",
+        // Images including uploads and data URIs
+        "img-src 'self' data: https:",
+        // Fonts from Google/Font Awesome CDN
+        "font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com",
+        // AJAX/WebSocket endpoints
+        "connect-src 'self' https:",
+        // Restrict framing and form submissions
+        "frame-ancestors 'self'",
+        "base-uri 'self'",
+        "form-action 'self'"
+    ];
+    header('Content-Security-Policy: ' . implode('; ', $csp));
 }
 
 // Auto-load database
@@ -131,6 +206,10 @@ function generateCSRFToken() {
 }
 
 function validateCSRFToken($token) {
+    // Allow CSRF token from header for AJAX requests if not provided explicitly
+    if (empty($token)) {
+        $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+    }
     return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
 

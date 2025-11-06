@@ -63,6 +63,7 @@ require_once 'includes/header.php';
                 <div class="card-body">
                     <form action="handlers/save_content.php" method="POST" enctype="multipart/form-data">
                         <input type="hidden" name="content_id" value="<?= $content['id'] ?>">
+                        <input type="hidden" name="csrf_token" value="<?= generateCSRFToken(); ?>">
                         
                         <div class="mb-3">
                             <label for="title" class="form-label">Title *</label>

@@ -15,6 +15,10 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 try {
+    // CSRF validation
+    if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
+        throw new Exception('Invalid request token');
+    }
     // Validate content ID
     if (empty($_POST['content_id']) || !is_numeric($_POST['content_id'])) {
         throw new Exception('Invalid content ID');

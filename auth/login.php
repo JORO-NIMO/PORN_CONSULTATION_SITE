@@ -7,6 +7,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = sanitize($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     
+    // CSRF validation
+    if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
+        $errors[] = 'Invalid request token';
+        if (isAjax()) {
+            jsonResponse(['success' => false, 'errors' => $errors], 403);
+        }
+    }
+    
+    // Rate limiting per IP+email to mitigate brute force
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $key = strtolower($email) . '|' . $ip;
+    if (!isset($_SESSION['login_attempts'])) { $_SESSION['login_attempts'] = []; }
+    $attempt = $_SESSION['login_attempts'][$key] ?? ['count' => 0, 'lock_until' => 0];
+    if ($attempt['lock_until'] > time()) {
+        $errors[] = 'Too many attempts. Please try again later.';
+        if (isAjax()) {
+            jsonResponse(['success' => false, 'errors' => $errors], 429);
+        }
+    }
+    
     if (empty($email) || empty($password)) {
         $errors[] = 'Email and password are required';
     } else {
@@ -29,14 +49,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 [$sessionId, $user['id'], $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT'], SESSION_LIFETIME]
             );
             
+            $isAdminUser = false;
+            if (defined('ADMIN_EMAIL') && filter_var(ADMIN_EMAIL, FILTER_VALIDATE_EMAIL)) {
+                $isAdminUser = (strtolower($user['email']) === strtolower(ADMIN_EMAIL));
+            }
+            $_SESSION['is_admin'] = $isAdminUser ? 1 : 0;
+            // Reset rate limiting on success
+            $_SESSION['login_attempts'][$key] = ['count' => 0, 'lock_until' => 0];
+
             if (isAjax()) {
-                jsonResponse(['success' => true, 'redirect' => '../dashboard.php']);
+                jsonResponse(['success' => true, 'redirect' => $isAdminUser ? '../admin/dashboard.php' : '../dashboard.php']);
             } else {
-                header('Location: ../dashboard.php');
+                header('Location: ' . ($isAdminUser ? '../admin/dashboard.php' : '../dashboard.php'));
                 exit;
             }
         } else {
             $errors[] = 'Invalid email or password';
+            // Increment attempts and possibly lock
+            $attempt['count'] = ($attempt['count'] ?? 0) + 1;
+            if ($attempt['count'] >= MAX_LOGIN_ATTEMPTS) {
+                $attempt['lock_until'] = time() + LOGIN_LOCKOUT_TIME;
+            }
+            $_SESSION['login_attempts'][$key] = $attempt;
         }
     }
     
@@ -72,6 +106,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
             
             <form id="loginForm" method="POST" class="auth-form">
+                <input type="hidden" name="csrf_token" value="<?php echo generateCSRFToken(); ?>">
                 <div class="form-group">
                     <label for="email">Email Address</label>
                     <input type="email" id="email" name="email" required 

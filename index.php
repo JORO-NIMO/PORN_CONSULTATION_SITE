@@ -163,11 +163,12 @@ $quotes_data = getQuotableQuotes(2);
     </div>
     
     <!-- Motivational Cards (CardSwap) -->
-    <section class="features">
+    <section class="daily-motivation">
         <div class="container">
             <h2 style="text-align:center; margin-bottom: 2rem;">Daily Motivation</h2>
-            <div style="height: 500px; position: relative; margin-bottom: 1rem;">
-                <div class="cardswap" data-card-distance="60" data-vertical-distance="70" data-delay="5000" data-pause-on-hover="false">
+            <div class="motivation-container">
+                <div class="lightning-bg"></div>
+                <div class="cardswap" data-card-distance="60" data-vertical-distance="70" data-delay="8000" data-pause-on-hover="false">
                     <div class="cs-card">
                         <h3>Affirmations</h3>
                         <?php foreach ($affirmations as $a): ?>

@@ -1,10 +1,46 @@
 <?php
+require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/auth_helpers.php';
 requireAdmin(); // This ensures only admins can access this page
 
+// Get database instance
+$db = Database::getInstance();
+
+
+
+// Function to get time elapsed string
+function time_elapsed_string($datetime, $full = false) {
+    $now = new DateTime;
+    $ago = new DateTime($datetime);
+    $diff = $now->diff($ago);
+
+    $diff->w = floor($diff->d / 7);
+    $diff->d -= $diff->w * 7;
+
+    $string = array(
+        'y' => 'year',
+        'm' => 'month',
+        'w' => 'week',
+        'd' => 'day',
+        'h' => 'hour',
+        'i' => 'minute',
+        's' => 'second',
+    );
+    foreach ($string as $k => &$v) {
+        if ($diff->$k) {
+            $v = $diff->$k . ' ' . $v . ($diff->$k > 1 ? 's' : '');
+        } else {
+            unset($string[$k]);
+        }
+    }
+
+    if (!$full) $string = array_slice($string, 0, 1);
+    return $string ? implode(', ', $string) . ' ago' : 'just now';
+}
+
 $pageTitle = 'Admin Dashboard';
-require_once __DIR__ . '/../includes/header.php';
-?>
+require_once __DIR__ . '/../includes/header.php';?>
 
 <div class="admin-dashboard">
     <div class="container-fluid">
@@ -97,7 +133,7 @@ require_once __DIR__ . '/../includes/header.php';
                             <div class="card-body">
                                 <h5 class="card-title">Active Sessions</h5>
                                 <h2 class="mb-0"><?php 
-                                    $activeSessions = $db->selectValue("SELECT COUNT(DISTINCT user_id) FROM user_sessions WHERE last_activity > DATE_SUB(NOW(), INTERVAL 30 MINUTE)");
+                                    $activeSessions = $db->selectValue("SELECT COUNT(*) FROM sessions WHERE expires_at > NOW()");
                                     echo number_format($activeSessions);
                                 ?></h2>
                                 <p class="card-text"><small>Currently active</small></p>
