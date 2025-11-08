@@ -216,15 +216,7 @@ class Auth {
         return $user && in_array($user->role, $roles);
     }
     
-    /**
-     * Check if the authenticated user is an admin
-     * 
-     * @return bool
-     */
-    public function isAdmin() {
-        return $this->hasRole('admin');
-    }
-    
+
     /**
      * Check if the authenticated user is a counselor
      * 

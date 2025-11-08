@@ -20,5 +20,5 @@ session_destroy();
 @session_start();
 session_regenerate_id(true);
 
-header('Location: login.php');
+header('Location: auth/login.php');
 exit;

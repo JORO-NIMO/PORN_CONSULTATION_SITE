@@ -29,14 +29,10 @@
             <a href="anonymous-messaging.php">Anonymous Message</a>
             <a href="contact.php">Contact</a>
             <?php if (isLoggedIn()): ?>
-                <?php if (isAdmin()): ?>
-                    <a href="admin/dashboard.php">Admin</a>
-                <?php else: ?>
-                    <a href="dashboard.php">Dashboard</a>
-                <?php endif; ?>
+                <a href="dashboard.php">Dashboard</a>
                 <a href="auth/logout.php">Logout</a>
             <?php else: ?>
-                <a href="login.php">Login</a>
+                <a href="auth/login.php">Login</a>
                 <a href="register.php">Register</a>
             <?php endif; ?>
         </nav>

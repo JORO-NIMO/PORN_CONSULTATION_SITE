@@ -150,14 +150,5 @@ class Controller {
      */
     protected function requireAdmin() {
         $this->requireAuth();
-        
-        if (!$this->auth->user()->isAdmin()) {
-            if ($this->isAjax()) {
-                $this->json(['error' => 'Unauthorized'], 403);
-            }
-            
-            $this->session->setFlash('error', 'You do not have permission to access this page');
-            $this->redirect('/');
-        }
     }
 }

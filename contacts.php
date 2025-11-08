@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/config/config.php';
 
 // Generate CSRF token for the form
 $csrf = generateCSRFToken();
@@ -24,6 +24,18 @@ $csrf = generateCSRFToken();
             <div>
                 <label for="email">Email</label>
                 <input id="email" name="email" type="email" required />
+            </div>
+            <div>
+                <label for="subject">Subject</label>
+                <input id="subject" name="subject" type="text" />
+            </div>
+            <div>
+                <label for="phone">Phone Number</label>
+                <input id="phone" name="phone" type="tel" />
+            </div>
+            <div>
+                <label for="company">Company Name</label>
+                <input id="company" name="company" type="text" />
             </div>
             <div>
                 <label for="message">Message</label>

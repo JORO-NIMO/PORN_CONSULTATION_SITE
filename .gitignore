@@ -22,4 +22,5 @@ logs/
 # Ignore temporary files
 *.tmp
 *.temp
-*~
+# ABBYY API Key
+abbyy_GWHVyRmHbJxFC3KwZSNz5AwD2UBMLmvgO980aiwzzpN2VEq8o

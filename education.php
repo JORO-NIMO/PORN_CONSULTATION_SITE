@@ -1,16 +1,19 @@
 <?php
-require_once 'config/config.php';
+require_once __DIR__ . '/config/config.php';
 requireLogin();
 
-// Function to fetch Wikipedia summary with caching
-function getWikipediaSummary($topic, $cache_duration = 1800) { // 30 minutes cache
-    $cache_file = __DIR__ . '/data/cache/' . preg_replace('/[^a-zA-Z0-9_-]/i', '_', $topic) . '.json';
+// Function to fetch articles from News API
+function getNewsArticles($query, $cache_duration = 1800) { // 30 minutes cache
+    $cache_file = __DIR__ . '/data/cache/' . preg_replace('/[^a-zA-Z0-9_-]/i', '_', $query) . '_news.json';
 
     if (file_exists($cache_file) && (time() - filemtime($cache_file)) < $cache_duration) {
         return json_decode(file_get_contents($cache_file), true);
     }
 
-    $apiUrl = "https://en.wikipedia.org/api/rest_v1/page/summary/" . urlencode($topic);
+    // Replace with your actual News API key
+    $apiKey = 'YOUR_NEWS_API_KEY'; 
+    $apiUrl = "https://newsapi.org/v2/everything?q=" . urlencode($query) . "&language=en&sortBy=relevancy&apiKey=" . $apiKey;
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $apiUrl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -20,22 +23,33 @@ function getWikipediaSummary($topic, $cache_duration = 1800) { // 30 minutes cac
 
     $data = json_decode($json, true);
 
-    if (isset($data['title']) && isset($data['extract'])) {
+    if (isset($data['articles']) && !empty($data['articles'])) {
         file_put_contents($cache_file, $json);
-        return $data;
+        return $data['articles'];
     }
 
-    return null;
+    return [];
 }
 
-$wiki_topics = ['Depression_(mood)', 'Anxiety', 'Cognitive_behavioral_therapy', 'Mindfulness'];
-$wiki_summaries = [];
-foreach ($wiki_topics as $topic) {
-    $summary = getWikipediaSummary($topic);
-    if ($summary) {
-        $wiki_summaries[] = $summary;
+$educational_topics = ['mental health', 'psychology', 'therapy', 'well-being', 'mindfulness', 'addiction recovery'];
+$news_articles = [];
+foreach ($educational_topics as $topic) {
+    $articles = getNewsArticles($topic);
+    $news_articles = array_merge($news_articles, $articles);
+}
+
+// Remove duplicates based on article URL
+$unique_articles = [];
+$seen_urls = [];
+foreach ($news_articles as $article) {
+    if (!in_array($article['url'], $seen_urls)) {
+        $unique_articles[] = $article;
+        $seen_urls[] = $article['url'];
     }
 }
+
+// Limit to a reasonable number of articles
+$news_articles = array_slice($unique_articles, 0, 12);
 
 $db = Database::getInstance();
 
@@ -121,16 +135,16 @@ $latestContent = $db->fetchAll("SELECT * FROM educational_content ORDER BY creat
                 <p class="subtitle">Learn about the science, effects, and recovery from pornography addiction</p>
             </div>
 
-            <!-- Wikipedia Summaries -->
+            <!-- News API Articles -->
             <section class="content-section">
-                <h2>Quick Overviews from Wikipedia</h2>
+                <h2>Latest Educational Articles</h2>
                 <div class="content-grid">
-                    <?php foreach ($wiki_summaries as $summary): ?>
+                    <?php foreach ($news_articles as $article): ?>
                     <div class="content-card">
-                        <h3><?php echo sanitize($summary['title']); ?></h3>
-                        <p><?php echo substr(sanitize($summary['extract']), 0, 200); ?>...</p>
+                        <h3><?php echo sanitize($article['title']); ?></h3>
+                        <p><?php echo substr(sanitize($article['description']), 0, 150); ?>...</p>
                         <div class="card-footer">
-                            <a href="<?php echo sanitize($summary['content_urls']['desktop']['page']); ?>" class="btn btn-link" target="_blank" rel="noopener">Read More on Wikipedia →</a>
+                            <a href="<?php echo sanitize($article['url']); ?>" class="btn btn-link" target="_blank" rel="noopener">Read More →</a>
                         </div>
                     </div>
                     <?php endforeach; ?>
@@ -172,46 +186,8 @@ $latestContent = $db->fetchAll("SELECT * FROM educational_content ORDER BY creat
                 </div>
             </section>
             
-            <!-- Latest Content -->
-            <section class="content-section">
-                <h2>Latest Resources</h2>
-                <div class="content-grid">
-                    <?php foreach ($latestContent as $content): ?>
-                    <div class="content-card">
-                        <div class="content-type-badge"><?php echo ucfirst($content['content_type']); ?></div>
-                        <h3><?php echo sanitize($content['title']); ?></h3>
-                        <p><?php echo substr(sanitize($content['content']), 0, 120); ?>...</p>
-                        <div class="card-footer">
-                            <span class="views">👁️ <?php echo $content['views']; ?></span>
-                            <a href="?id=<?php echo $content['id']; ?>" class="btn btn-link">Read More →</a>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </section>
-            
-            <!-- Content by Category -->
-            <?php foreach ($contentByCategory as $category => $items): ?>
-            <?php if (!empty($items)): ?>
-            <section class="content-section">
-                <h2><?php echo $category; ?></h2>
-                <div class="content-list">
-                    <?php foreach ($items as $content): ?>
-                    <div class="content-list-item">
-                        <div class="content-type-badge small"><?php echo ucfirst($content['content_type']); ?></div>
-                        <div class="content-info">
-                            <h3><a href="?id=<?php echo $content['id']; ?>"><?php echo sanitize($content['title']); ?></a></h3>
-                            <p><?php echo substr(sanitize($content['content']), 0, 100); ?>...</p>
-                        </div>
-                        <div class="content-stats">
-                            <span>👁️ <?php echo $content['views']; ?></span>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </section>
-            <?php endif; ?>
-            <?php endforeach; ?>
+            <!-- Latest Content (Removed - now using News API) -->
+            <!-- Content by Category (Removed - now using News API) -->
             
             <?php endif; ?>
         </div>

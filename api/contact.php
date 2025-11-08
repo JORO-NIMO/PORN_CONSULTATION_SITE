@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../includes/mail_helper.php';
 
 // Enforce POST and CSRF for security
@@ -13,6 +13,9 @@ header('Content-Type: application/json');
 
 $name = sanitize($_POST['name'] ?? '');
 $email = sanitize($_POST['email'] ?? '');
+$subject = sanitize($_POST['subject'] ?? '');
+$phone = sanitize($_POST['phone'] ?? '');
+$company = sanitize($_POST['company'] ?? '');
 $message = trim($_POST['message'] ?? '');
 $token = $_POST['csrf_token'] ?? '';
 
@@ -32,8 +35,8 @@ if (!$name || !filter_var($email, FILTER_VALIDATE_EMAIL) || !$message) {
 try {
     $pdo = new PDO("mysql:host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASS);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $stmt = $pdo->prepare("INSERT INTO contact_messages (name, email, message) VALUES (?, ?, ?)");
-    $stmt->execute([$name, $email, $message]);
+    $stmt = $pdo->prepare("INSERT INTO contact_messages (name, email, subject, phone, company, message) VALUES (?, ?, ?, ?, ?, ?)");
+    $stmt->execute([$name, $email, $subject, $phone, $company, $message]);
 } catch (PDOException $e) {
     error_log("Contact form DB error: " . $e->getMessage());
     http_response_code(500);
@@ -49,13 +52,19 @@ if (!defined('ADMIN_EMAIL') || !filter_var(ADMIN_EMAIL, FILTER_VALIDATE_EMAIL)) 
 }
 
 $siteName = defined('SITE_NAME') ? SITE_NAME : 'Website';
-$subject = '[' . $siteName . '] New contact message';
+$emailSubject = '[' . $siteName . '] New contact message';
+if (!empty($subject)) {
+    $emailSubject .= ': ' . htmlspecialchars($subject);
+}
+
 $html = '<p>New contact message</p>' .
         '<ul>' .
         '<li>Name: ' . htmlspecialchars($name) . '</li>' .
         '<li>Email: ' . htmlspecialchars($email) . '</li>' .
+        (!empty($phone) ? '<li>Phone: ' . htmlspecialchars($phone) . '</li>' : '') .
+        (!empty($company) ? '<li>Company: ' . htmlspecialchars($company) . '</li>' : '') .
         '</ul>' .
         '<p>Message:</p><pre style="white-space:pre-wrap">' . htmlspecialchars($message) . '</pre>';
 
-$ok = send_mail_safe(ADMIN_EMAIL, $subject, $html, strip_tags($html), $email);
+$ok = send_mail_safe(ADMIN_EMAIL, $emailSubject, $html, strip_tags($html), $email);
 echo json_encode(['success' => (bool)$ok]);

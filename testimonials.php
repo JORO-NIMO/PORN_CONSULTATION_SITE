@@ -1,5 +1,5 @@
 <?php
-require_once 'config/config.php';
+require_once __DIR__ . '/config/config.php';
 require_once __DIR__ . '/includes/api_helpers.php';
 
 // Prepare paired content for sections

@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/config/config.php';
 include __DIR__ . '/includes/header.php';
 
 $therapistId = isset($_COOKIE['therapist_id']) ? (int)$_COOKIE['therapist_id'] : 0;

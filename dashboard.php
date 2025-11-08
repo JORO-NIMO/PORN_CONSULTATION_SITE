@@ -1,5 +1,5 @@
 <?php
-require_once 'config/config.php';
+require_once __DIR__ . '/config/config.php';
 requireLogin();
 
 $db = Database::getInstance();
@@ -20,6 +20,7 @@ $upcomingConsultations = $db->fetchAll(
      ORDER BY c.scheduled_time ASC LIMIT 3",
     [$_SESSION['user_id']]
 );
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -83,9 +84,7 @@ $upcomingConsultations = $db->fetchAll(
                             </p>
                         </div>
                         <div class="consultation-actions">
-                            <?php if ($consult['video_room_id']): ?>
-                            <a href="video-call.php?id=<?php echo $consult['id']; ?>" class="btn btn-primary">Join Call</a>
-                            <?php endif; ?>
+
                             <a href="consultations.php?id=<?php echo $consult['id']; ?>" class="btn btn-secondary">Details</a>
                         </div>
                     </div>

@@ -15,7 +15,8 @@ $migrations = [
     'add_content_management_tables.php',
     'add_role_to_users_table.php',
     '008_create_contact_messages_table.php',
-    '009_create_anonymous_messages_table.php'
+    '009_create_anonymous_messages_table.php',
+    '011_alter_contact_messages_table.php'
 ];
 
 // Create migrations table if it doesn't exist
@@ -74,11 +75,11 @@ foreach ($migrationFiles as $file) {
         } catch (Exception $e) {
             // Rollback on error
             $db->query("ROLLBACK");
-            echo "✗ Error in $migration: " . $e->getMessage() . "\n";
+            echo "✗ Error in $file: " . $e->getMessage() . "\n";
             exit(1);
         }
     } else {
-        echo "- $migration already run, skipping\n";
+        echo "- $file already run, skipping\n";
     }
 }
 

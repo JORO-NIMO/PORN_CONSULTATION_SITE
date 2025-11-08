@@ -1,12 +1,6 @@
 <?php
-/**
- * Error Handling Page
- * 
- * This script handles all error pages (400, 401, 403, 404, 500, etc.)
- * and displays a user-friendly message while logging the error.
- */
-
-require_once __DIR__ . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/csrf_functions.php';
 
 // Security headers
 header('X-Content-Type-Options: nosniff');

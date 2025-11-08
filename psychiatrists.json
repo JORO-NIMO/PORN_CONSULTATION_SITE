@@ -1,0 +1,42 @@
+[
+    {
+        "id": 1,
+        "name": "Dr. Alice Smith",
+        "specialization": "Child Psychiatry",
+        "email": "alice.smith@example.com",
+        "phone": "+1-555-123-4567",
+        "profile_image": "https://randomuser.me/api/portraits/women/1.jpg",
+        "rating": 4.9,
+        "total_consultations": 120
+    },
+    {
+        "id": 2,
+        "name": "Dr. Bob Johnson",
+        "specialization": "Adult Psychiatry",
+        "email": "bob.johnson@example.com",
+        "phone": "+1-555-987-6543",
+        "profile_image": "https://randomuser.me/api/portraits/men/2.jpg",
+        "rating": 4.7,
+        "total_consultations": 95
+    },
+    {
+        "id": 3,
+        "name": "Dr. Carol White",
+        "specialization": "Geriatric Psychiatry",
+        "email": "carol.white@example.com",
+        "phone": "+1-555-111-2222",
+        "profile_image": "https://randomuser.me/api/portraits/women/3.jpg",
+        "rating": 4.8,
+        "total_consultations": 80
+    },
+    {
+        "id": 4,
+        "name": "Dr. David Green",
+        "specialization": "Addiction Psychiatry",
+        "email": "david.green@example.com",
+        "phone": "+1-555-333-4444",
+        "profile_image": "https://randomuser.me/api/portraits/men/4.jpg",
+        "rating": 4.6,
+        "total_consultations": 110
+    }
+]

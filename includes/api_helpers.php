@@ -67,9 +67,8 @@ function getZenQuotes($count = 2) {
     $key = 'zenquotes_all';
     $all = ah_cache_get($key, 3600);
     if (!$all) {
-        // Get larger set once, pick randoms
         $all = ah_fetch_json('https://zenquotes.io/api/quotes');
-        if (!$all || !is_array($all)) {
+        if (!is_array($all)) {
             $all = [
                 ['q' => 'Peace comes from within. Do not seek it without.', 'a' => 'Buddha'],
                 ['q' => 'The only way out is through.', 'a' => 'Robert Frost']
@@ -88,7 +87,7 @@ function getQuotableQuotes($count = 2) {
     $data = ah_cache_get($key, 1800);
     if (!$data) {
         $data = ah_fetch_json('https://api.quotable.io/quotes/random?limit=4&tags=inspirational|wisdom|life');
-        if (!$data || !is_array($data)) {
+        if (!is_array($data)) {
             $data = [
                 ['content' => 'The journey of a thousand miles begins with one step.', 'author' => 'Lao Tzu'],
                 ['content' => 'What you do today can improve all your tomorrows.', 'author' => 'Ralph Marston'],
@@ -139,8 +138,10 @@ function getGuardianArticles($count = 2) {
         $res = ah_fetch_json($url);
         if ($res && isset($res['response']['results'])) {
             $data = $res['response']['results'];
+        } else {
+            $data = []; // Ensure $data is an array even if fetch fails
         }
-        if (!$data) {
+        if (empty($data)) {
             $data = [
                 ['webTitle' => 'Wellbeing: creating daily habits', 'webUrl' => 'https://www.theguardian.com/', 'fields' => ['trailText' => 'Healthy routines', 'thumbnail' => '']],
                 ['webTitle' => 'Community mental health support', 'webUrl' => 'https://www.theguardian.com/', 'fields' => ['trailText' => 'Support networks matter', 'thumbnail' => '']]

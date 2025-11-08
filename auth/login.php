@@ -1,5 +1,6 @@
 <?php
-require_once '../config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/csrf_functions.php';
 
 $errors = [];
 
@@ -49,18 +50,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 [$sessionId, $user['id'], $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT'], SESSION_LIFETIME]
             );
             
-            $isAdminUser = false;
-            if (defined('ADMIN_EMAIL') && filter_var(ADMIN_EMAIL, FILTER_VALIDATE_EMAIL)) {
-                $isAdminUser = (strtolower($user['email']) === strtolower(ADMIN_EMAIL));
-            }
-            $_SESSION['is_admin'] = $isAdminUser ? 1 : 0;
             // Reset rate limiting on success
             $_SESSION['login_attempts'][$key] = ['count' => 0, 'lock_until' => 0];
 
             if (isAjax()) {
-                jsonResponse(['success' => true, 'redirect' => $isAdminUser ? '../admin/dashboard.php' : '../dashboard.php']);
+                jsonResponse(['success' => true, 'redirect' => '../dashboard.php']);
             } else {
-                header('Location: ' . ($isAdminUser ? '../admin/dashboard.php' : '../dashboard.php'));
+                header('Location: ../dashboard.php');
                 exit;
             }
         } else {

@@ -3,8 +3,8 @@
  * Admin Header
  */
 
-// Check if the user is logged in and is an admin
-if (!isset($_SESSION['user_id']) || !isAdmin($_SESSION['user_id'])) {
+// Check if the user is logged in
+if (!isset($_SESSION['user_id'])) {
     header('Location: /auth/login.php?redirect=' . urlencode($_SERVER['REQUEST_URI']));
     exit();
 }
@@ -189,7 +189,8 @@ $unreadCount = getUnreadNotificationCount($_SESSION['user_id']);
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                         <li><a class="dropdown-item" href="settings.php"><i class="fas fa-cog me-2"></i> Settings</a></li>
                         <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="/logout.php"><i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
+                        <li><a href="/auth/login.php" class="dropdown-item has-icon text-danger">
+                            <i class="fas fa-sign-out-alt me-2"></i> Logout</a></li>
                     </ul>
                 </div>
             </div>

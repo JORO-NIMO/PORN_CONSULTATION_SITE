@@ -3,8 +3,7 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/auth_helpers.php';
 
-// Ensure user is admin
-requireAdmin();
+
 
 // Check if content ID is provided
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {

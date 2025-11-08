@@ -33,12 +33,4 @@ $db->query(
     [$consultationId]
 );
 
-// Update video session end time
-$db->query(
-    "UPDATE video_sessions SET ended_at = datetime('now'), 
-     duration_seconds = (julianday(datetime('now')) - julianday(started_at)) * 86400 
-     WHERE consultation_id = ?",
-    [$consultationId]
-);
-
 jsonResponse(['success' => true, 'message' => 'Consultation ended successfully']);

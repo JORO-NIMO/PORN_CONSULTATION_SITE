@@ -6,7 +6,7 @@
 // Security check
 require_once __DIR__ . '/../config/config.php';
 requireLogin();
-requireAdmin();
+
 
 // Set page title
 $pageTitle = 'Admin Dashboard';

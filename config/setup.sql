@@ -91,7 +91,6 @@ CREATE TABLE IF NOT EXISTS consultations (
     duration_minutes INT DEFAULT 60,
     status ENUM('scheduled', 'in_progress', 'completed', 'cancelled') DEFAULT 'scheduled',
     notes TEXT,
-    video_room_id VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (psychiatrist_id) REFERENCES psychiatrists(id) ON DELETE CASCADE,
@@ -118,20 +117,7 @@ CREATE TABLE IF NOT EXISTS educational_content (
     INDEX idx_featured (is_featured)
 ) ENGINE=InnoDB;
 
--- Video call sessions table
-CREATE TABLE IF NOT EXISTS video_sessions (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    consultation_id INT,
-    room_id VARCHAR(255) UNIQUE NOT NULL,
-    user_token VARCHAR(255) NOT NULL,
-    psychiatrist_token VARCHAR(255) NOT NULL,
-    started_at TIMESTAMP NULL,
-    ended_at TIMESTAMP NULL,
-    duration_seconds INT DEFAULT 0,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (consultation_id) REFERENCES consultations(id) ON DELETE CASCADE,
-    INDEX idx_room (room_id)
-) ENGINE=InnoDB;
+
 
 -- Sessions table for user authentication
 CREATE TABLE IF NOT EXISTS sessions (
@@ -140,7 +126,7 @@ CREATE TABLE IF NOT EXISTS sessions (
     ip_address VARCHAR(45),
     user_agent VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    expires_at TIMESTAMP NOT NULL,
+    expires_at TIMESTAMP NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_user (user_id),
     INDEX idx_expires (expires_at)
@@ -208,6 +194,10 @@ CREATE TABLE IF NOT EXISTS media (
     INDEX idx_user (user_id),
     INDEX idx_created (created_at)
 ) ENGINE=InnoDB;
+
+-- Insert sample users
+INSERT INTO users (id, email, name, password_hash, is_anonymous) VALUES
+(1, 'testuser@example.com', 'Test User', '$2y$10$abcdefghijklmnopqrstuvwxy.abcdefghijklmnopqrs', FALSE);
 
 -- Insert sample psychiatrists
 INSERT INTO psychiatrists (name, specialization, bio, qualifications, experience_years, email, phone, availability, rating, is_active) VALUES

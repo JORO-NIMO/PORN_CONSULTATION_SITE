@@ -17,7 +17,7 @@ ini_set('display_errors', ENVIRONMENT === 'development' ? '1' : '0');
 
 // Database configuration
 define('DB_HOST', '127.0.0.1'); // Using IP instead of localhost to avoid potential socket issues
-define('DB_NAME', 'mental_freedom_path');
+define('DB_NAME', 'antiporn_campaign');
 define('DB_USER', 'root');
 define('DB_PASS', '1234'); // Default XAMPP has no password
 define('DB_CHARSET', 'utf8mb4');
@@ -41,6 +41,24 @@ class Database {
                 $this->pdo = new PDO("mysql:host=" . DB_HOST, DB_USER, DB_PASS, $options);
                 $this->pdo->exec("CREATE DATABASE IF NOT EXISTS `" . DB_NAME . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
                 $this->pdo->exec("USE `" . DB_NAME . "`");
+                $this->pdo->exec("DROP TABLE IF EXISTS `therapists`;");
+                $this->pdo->exec("
+                    CREATE TABLE `therapists` (
+                        `id` INT AUTO_INCREMENT PRIMARY KEY,
+                        `name` VARCHAR(255) NOT NULL,
+                        `medical_specialty` TEXT,
+                        `address_locality` VARCHAR(255),
+                        `address_country` VARCHAR(255),
+                        `telephone` VARCHAR(255),
+                        `contact_email` VARCHAR(255),
+                        `url` VARCHAR(255),
+                        `image` VARCHAR(255),
+                        `source` VARCHAR(255),
+                        `source_id` VARCHAR(255) UNIQUE,
+                        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+                ");
             } catch (PDOException $e) {
                 // If connection fails, try without specifying database first
                 try {

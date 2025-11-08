@@ -8,11 +8,7 @@ require_once __DIR__ . '/../config/database.php';
 
 function redirectBasedOnRole(): void {
     try {
-        if (isAdmin()) {
-            header('Location: /admin/dashboard.php');
-        } else {
-            header('Location: /dashboard.php');
-        }
+        header('Location: /dashboard.php');
         exit();
     } catch (Throwable $e) {
         error_log('Redirect error: ' . $e->getMessage());

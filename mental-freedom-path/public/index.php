@@ -10,7 +10,7 @@ define('VIEWS_PATH', APP_PATH . '/views');
 define('CONFIG_PATH', ROOT_PATH . '/config');
 
 // Load configuration
-require_once CONFIG_PATH . '/config.php';
+require_once CONFIG_PATH . '/../config/config.php';
 
 // Apply session settings before starting the session
 ini_set('session.cookie_httponly', SESSION_COOKIE_HTTPONLY);

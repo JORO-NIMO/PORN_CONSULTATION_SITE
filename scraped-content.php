@@ -1,5 +1,5 @@
 <?php
-require_once 'config/config.php';
+require_once __DIR__ . '/config/config.php';
 
 $db = Database::getInstance();
 
@@ -188,12 +188,6 @@ $articles = $db->fetchAll(
             <?php if (empty($videos) && empty($research) && empty($articles)): ?>
             <div class="content-section" style="text-align: center; padding: 4rem;">
                 <h2>No Content Yet</h2>
-                <p style="font-size: 1.125rem; color: var(--text); margin-bottom: 2rem;">
-                    The content scraper hasn't run yet. Run it manually to fetch the latest content.
-                </p>
-                <a href="scraper/advanced-scraper.php?run_advanced_scraper=1" class="btn btn-primary" style="font-size: 1.125rem; padding: 1rem 2rem;">
-                    Run Scraper Now
-                </a>
             </div>
             <?php endif; ?>
         </div>

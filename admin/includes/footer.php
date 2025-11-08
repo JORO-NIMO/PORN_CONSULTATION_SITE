@@ -99,7 +99,7 @@ $(document).ajaxError(function(event, jqXHR, ajaxSettings, thrownError) {
     
     if (jqXHR.status === 401) {
         errorMessage = 'Your session has expired. Please refresh the page and log in again.';
-        window.location.href = '/login.php?expired=1';
+        window.location.href = '/auth/login.php?expired=1';
     } else if (jqXHR.status === 403) {
         errorMessage = 'You do not have permission to perform this action.';
     } else if (jqXHR.status === 404) {

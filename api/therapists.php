@@ -1,7 +1,7 @@
 <?php
 // REST API for therapists directory
 // Routes:
-//  GET  /api/therapists           (filters: city, country, specialty, language)
+//  GET  /api/therapists
 //  GET  /api/therapists/{id}
 //  POST /api/therapists/claim     (therapist_id, email)
 //  PUT  /api/therapists/{id}
@@ -46,14 +46,9 @@ if (isset($segments[2])) {
 
 try {
     if ($method === 'GET' && !$id && !$action) {
-        // List therapists with optional filters
-        $q = 'SELECT id, source, source_id, name, title, specialties, city, country, languages, contact_email, phone, profile_url, verified, last_scraped, updated_at FROM therapists WHERE 1=1';
+        // List therapists
+        $q = 'SELECT id, source, source_id, name, title, specialties, city, country, languages, contact_email, phone, profile_url, verified, last_scraped, updated_at FROM therapists';
         $params = [];
-        if (!empty($_GET['city'])) { $q .= ' AND city LIKE ?'; $params[] = '%' . $_GET['city'] . '%'; }
-        if (!empty($_GET['country'])) { $q .= ' AND country LIKE ?'; $params[] = '%' . $_GET['country'] . '%'; }
-        if (!empty($_GET['specialty'])) { $q .= ' AND specialties LIKE ?'; $params[] = '%' . $_GET['specialty'] . '%'; }
-        if (!empty($_GET['language'])) { $q .= ' AND languages LIKE ?'; $params[] = '%' . $_GET['language'] . '%'; }
-        $q .= ' ORDER BY updated_at DESC LIMIT 500';
         $stmt = $pdo->prepare($q);
         $stmt->execute($params);
         jsonResponse(['data' => $stmt->fetchAll()]);

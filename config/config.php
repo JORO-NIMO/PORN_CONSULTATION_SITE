@@ -159,6 +159,7 @@ if (!headers_sent()) {
 
 // Auto-load database
 require_once __DIR__ . '/database.php';
+require_once __DIR__ . '/../includes/csrf_functions.php';
 
 if (!defined('GOOGLE_API_KEY')) {
     define('GOOGLE_API_KEY', getenv('GOOGLE_API_KEY') ?: '');
@@ -196,21 +197,6 @@ function requireLogin() {
         exit;
     }
     $_SESSION['last_activity'] = time();
-}
-
-function generateCSRFToken() {
-    if (!isset($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = generateToken();
-    }
-    return $_SESSION['csrf_token'];
-}
-
-function validateCSRFToken($token) {
-    // Allow CSRF token from header for AJAX requests if not provided explicitly
-    if (empty($token)) {
-        $token = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
-    }
-    return isset($_SESSION['csrf_token']) && hash_equals($_SESSION['csrf_token'], $token);
 }
 
 function jsonResponse($data, $statusCode = 200) {

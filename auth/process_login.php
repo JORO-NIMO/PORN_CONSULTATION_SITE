@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // CSRF validation
     if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
         $_SESSION['error'] = 'Invalid request token';
-        header('Location: login.php');
+        header('Location: auth/login.php');
         exit();
     }
 
@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Basic validation
     if (empty($email) || empty($password)) {
         $_SESSION['error'] = 'Please enter both email and password';
-        header('Location: login.php');
+        header('Location: auth/login.php');
         exit();
     }
     
@@ -34,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $attempt = $_SESSION['login_attempts'][$key] ?? ['count' => 0, 'lock_until' => 0];
     if ($attempt['lock_until'] > time()) {
         $_SESSION['error'] = 'Too many attempts. Please try again later.';
-        header('Location: login.php');
+        header('Location: auth/login.php');
         exit();
     }
     
@@ -52,7 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Set session variables
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['user_email'] = $user['email'];
-            $_SESSION['user_role'] = $user['role'] ?: 'user';
             // Reset rate limiting counter for this key
             unset($_SESSION['login_attempts'][$key]);
             
@@ -80,23 +79,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 error_log('Login mail error: ' . $e->getMessage());
             }
             
-            // Redirect based on admin email (strict)
-            try {
-                $isAdminUser = false;
-                if (defined('ADMIN_EMAIL') && filter_var(ADMIN_EMAIL, FILTER_VALIDATE_EMAIL)) {
-                    $isAdminUser = (strtolower($user['email']) === strtolower(ADMIN_EMAIL));
-                }
-                // Persist convenience flag
-                $_SESSION['is_admin'] = $isAdminUser ? 1 : 0;
-                if ($isAdminUser) {
-                    header('Location: /admin/dashboard.php');
-                } else {
-                    header('Location: /dashboard.php');
-                }
-            } catch (Throwable $e) {
-                error_log('Post-login redirect error: ' . $e->getMessage());
-                header('Location: /dashboard.php');
-            }
+            // Redirect to dashboard
+            header('Location: /dashboard.php');
             exit();
         } else {
             // Increment attempt count and enforce lockout if needed
@@ -108,17 +92,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['login_attempts'][$key] = $attempt;
 
             $_SESSION['error'] = 'Invalid email or password';
-            header('Location: login.php');
+            header('Location: auth/login.php');
             exit();
         }
     } catch (Exception $e) {
         error_log('Login error: ' . $e->getMessage());
         $_SESSION['error'] = 'An error occurred. Please try again later.';
-        header('Location: login.php');
+        header('Location: auth/login.php');
         exit();
     }
 } else {
     // If not a POST request, redirect to login
-    header('Location: login.php');
+    header('Location: auth/login.php');
     exit();
 }

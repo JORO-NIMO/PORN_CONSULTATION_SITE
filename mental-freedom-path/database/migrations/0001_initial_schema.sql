@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS users (
     profile_image VARCHAR(255),
     is_active BOOLEAN DEFAULT 1,
     is_verified BOOLEAN DEFAULT 0,
-    role ENUM('user', 'counselor', 'admin') DEFAULT 'user',
+    role ENUM('user', 'admin') DEFAULT 'user',
     last_login DATETIME,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -48,25 +48,10 @@ CREATE TABLE IF NOT EXISTS mood_entries (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Counselors/Professionals
-CREATE TABLE IF NOT EXISTS counselors (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER UNIQUE NOT NULL,
-    license_number VARCHAR(100),
-    specialization VARCHAR(100),
-    years_of_experience INTEGER,
-    bio TEXT,
-    is_available BOOLEAN DEFAULT 1,
-    consultation_fee DECIMAL(10, 2) DEFAULT 0,
-    rating DECIMAL(3, 2) DEFAULT 0,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
-
 -- Appointments
 CREATE TABLE IF NOT EXISTS appointments (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
-    counselor_id INTEGER NOT NULL,
     appointment_date TIMESTAMP NOT NULL,
     duration_minutes INTEGER DEFAULT 60,
     status ENUM('scheduled', 'completed', 'cancelled', 'no_show') DEFAULT 'scheduled',
@@ -74,8 +59,7 @@ CREATE TABLE IF NOT EXISTS appointments (
     video_meeting_id VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (counselor_id) REFERENCES counselors(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 -- Chat Messages
@@ -133,7 +117,6 @@ CREATE TABLE IF NOT EXISTS user_activities (
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_role ON users(role);
 CREATE INDEX idx_appointments_user ON appointments(user_id);
-CREATE INDEX idx_appointments_counselor ON appointments(counselor_id);
 CREATE INDEX idx_appointments_date ON appointments(appointment_date);
 CREATE INDEX idx_chat_messages_sender ON chat_messages(sender_id);
 CREATE INDEX idx_chat_messages_receiver ON chat_messages(receiver_id);

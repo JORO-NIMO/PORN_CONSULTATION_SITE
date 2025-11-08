@@ -1,18 +1,8 @@
 (() => {
   const listEl = document.getElementById('therapist-list');
-  const inputs = {
-    city: document.getElementById('filter-city'),
-    country: document.getElementById('filter-country'),
-    specialty: document.getElementById('filter-specialty'),
-    language: document.getElementById('filter-language'),
-  };
 
   async function fetchTherapists() {
-    const params = new URLSearchParams();
-    Object.entries(inputs).forEach(([k, el]) => {
-      const v = el.value.trim(); if (v) params.set(k, v);
-    });
-    const res = await fetch('/api/therapists' + (params.toString() ? ('?' + params.toString()) : ''));
+    const res = await fetch('/api/therapists');
     const json = await res.json();
     renderList(json.data || []);
   }
@@ -21,7 +11,7 @@
 
   function renderList(items) {
     listEl.innerHTML = '';
-    if (!items.length) { listEl.innerHTML = '<p>No therapists found for current filters.</p>'; return; }
+    if (!items.length) { listEl.innerHTML = '<p>No therapists found.</p>'; return; }
     items.forEach(t => {
       const el = document.createElement('div');
       el.className = 'content-list-item';
@@ -46,11 +36,6 @@
   function escapeHtml(s) {
     return String(s).replace(/[&<>"]+/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]));
   }
-
-  document.getElementById('apply-filters').addEventListener('click', fetchTherapists);
-  document.getElementById('clear-filters').addEventListener('click', () => {
-    Object.values(inputs).forEach(el => el.value=''); fetchTherapists();
-  });
 
   // Initial load
   fetchTherapists();

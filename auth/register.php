@@ -94,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             <?php if ($success): ?>
                 <div class="alert success">
-                    Registration successful! <a href="login.php">Login now</a>
+                    Registration successful! <a href="auth/login.php">Login now</a>
                 </div>
             <?php endif; ?>
             
@@ -137,7 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
             
             <div class="auth-footer">
-                Already have an account? <a href="login.php">Login here</a>
+                Already have an account? <a href="auth/login.php">Login here</a>
             </div>
         </div>
     </div>

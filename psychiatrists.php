@@ -1,17 +1,12 @@
 <?php
-require_once 'config/config.php';
+require_once __DIR__ . '/config/config.php';
 requireLogin();
 
-$db = Database::getInstance();
+// Read psychiatrist data from JSON file
+$json_data = file_get_contents(__DIR__ . '/psychiatrists.json');
+$psychiatrists = json_decode($json_data, true);
 
-// Fetch psychiatrists from the dedicated psychiatrists table
-$psychiatrists = $db->fetchAll(
-    "SELECT id, name, specialization, email, profile_image, rating, total_consultations, created_at
-     FROM psychiatrists
-     WHERE is_active = 1
-     ORDER BY created_at DESC"
-);
-// Deduplicate by name (case-insensitive, trimmed)
+// Deduplicate by name (case-insensitive, trimmed) - still useful if JSON has duplicates
 $seen = [];
 $uniquePsychiatrists = [];
 foreach ($psychiatrists as $p) {
@@ -55,11 +50,6 @@ foreach ($psychiatrists as $p) {
                         <div class="psychiatrist-info">
                             <h2><?php echo sanitize($psych['name']); ?></h2>
                             <p class="specialization"><?php echo sanitize($psych['specialization'] ?? ''); ?></p>
-                            <?php if (!empty($psych['city']) || !empty($psych['country'])): ?>
-                            <div class="location">
-                                📍 <?php echo sanitize(trim(($psych['city'] ?? '') . ' ' . ($psych['country'] ?? ''))); ?>
-                            </div>
-                            <?php endif; ?>
                     </div>
                 </div>
                 
@@ -68,6 +58,9 @@ foreach ($psychiatrists as $p) {
                             <h3>Contact</h3>
                             <?php if (!empty($psych['email'])): ?>
                                 <div>Email: <a href="mailto:<?php echo sanitize($psych['email']); ?>"><?php echo sanitize($psych['email']); ?></a></div>
+                            <?php endif; ?>
+                            <?php if (!empty($psych['phone'])): ?>
+                                <div>Phone: <?php echo sanitize($psych['phone']); ?></div>
                             <?php endif; ?>
                             <?php if (!empty($psych['rating'])): ?>
                                 <div>Rating: <?php echo sanitize($psych['rating']); ?> ⭐</div>
@@ -81,6 +74,9 @@ foreach ($psychiatrists as $p) {
                 <div class="psychiatrist-footer">
                         <?php if (!empty($psych['email'])): ?>
                         <a href="mailto:<?php echo sanitize($psych['email']); ?>" class="btn btn-secondary">Email Psychiatrist</a>
+                        <?php endif; ?>
+                        <?php if (!empty($psych['phone'])): ?>
+                        <a href="tel:<?php echo sanitize($psych['phone']); ?>" class="btn btn-primary">Call Psychiatrist</a>
                         <?php endif; ?>
                 </div>
             </div>

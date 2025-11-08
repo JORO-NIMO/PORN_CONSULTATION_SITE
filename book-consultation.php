@@ -1,5 +1,5 @@
 <?php
-require_once 'config/config.php';
+require_once __DIR__ . '/config/config.php';
 requireLogin();
 
 $db = Database::getInstance();
@@ -30,21 +30,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         );
         
         $consultationId = $db->lastInsertId();
-        
-        // Create video room
-        $roomId = 'room_' . uniqid();
-        $userToken = generateToken();
-        $psychiatristToken = generateToken();
-        
+
+        // Send anonymous message to psychiatrist about the new consultation
+        $messageSubject = "New Consultation Booked";
+        $messageContent = "A new consultation has been booked with you.\n\n" .
+                          "Scheduled Time: " . date('M d, Y h:i A', strtotime($scheduledTime)) . "\n" .
+                          "Notes: " . ($notes ?: "No notes provided.") . "\n\n" .
+                          "This message is anonymous to protect the user's privacy.";
+
         $db->query(
-            "INSERT INTO video_sessions (consultation_id, room_id, user_token, psychiatrist_token) 
-             VALUES (?, ?, ?, ?)",
-            [$consultationId, $roomId, $userToken, $psychiatristToken]
-        );
-        
-        $db->query(
-            "UPDATE consultations SET video_room_id = ? WHERE id = ?",
-            [$roomId, $consultationId]
+            "INSERT INTO messages (sender_id, psychiatrist_id, subject, message, is_anonymous) 
+             VALUES (?, ?, ?, ?, ?)",
+            [$_SESSION['user_id'], $psychiatristId, $messageSubject, $messageContent, 1]
         );
         
         if (isAjax()) {
@@ -136,7 +133,6 @@ $availability = json_decode($psychiatrist['availability'], true);
                             <h4 style="margin-bottom: 0.5rem;">🔒 Privacy & Anonymity</h4>
                             <ul style="margin-left: 1.5rem; color: var(--text-light);">
                                 <li>Your consultation will be completely confidential</li>
-                                <li>Video calls are anonymous - you can choose to hide your identity</li>
                                 <li>All communications are encrypted</li>
                                 <li>No recordings are made without your consent</li>
                             </ul>
@@ -146,7 +142,6 @@ $availability = json_decode($psychiatrist['availability'], true);
                             <h4 style="margin-bottom: 0.5rem;">⏰ Consultation Details</h4>
                             <ul style="margin-left: 1.5rem; color: var(--text);">
                                 <li>Duration: 60 minutes</li>
-                                <li>Format: Secure video call</li>
                                 <li>You'll receive a reminder 24 hours before</li>
                                 <li>Cancellations accepted up to 12 hours before</li>
                             </ul>

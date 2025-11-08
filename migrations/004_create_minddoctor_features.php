@@ -72,23 +72,6 @@ try {
     )");
     $db->exec("CREATE INDEX IF NOT EXISTS idx_search_logs_user ON wellness_search_logs(user_id)");
 
-    // 5. Mental Health Practitioners (wider than psychiatrists)
-    $db->exec("CREATE TABLE IF NOT EXISTS mental_health_practitioners (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        organization TEXT,
-        specialty TEXT,
-        phone TEXT,
-        email TEXT,
-        website TEXT,
-        district TEXT,
-        address TEXT,
-        is_verified INTEGER DEFAULT 0,
-        created_at TEXT DEFAULT CURRENT_TIMESTAMP
-    )");
-    $db->exec("CREATE INDEX IF NOT EXISTS idx_practitioners_district ON mental_health_practitioners(district)");
-    $db->exec("CREATE INDEX IF NOT EXISTS idx_practitioners_specialty ON mental_health_practitioners(specialty)");
-
     $db->commit();
     echo "✅ Migration 004 applied successfully\n";
 } catch (Exception $e) {

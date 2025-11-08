@@ -1,6 +1,6 @@
 <?php
 // Load configuration
-require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../config/config.php';
 
 // Set headers
 header('Content-Type: application/json');

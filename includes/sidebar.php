@@ -21,7 +21,7 @@ if (!function_exists('isLoggedIn')) {
                 <li><a href="exercises.php">Exercises</a></li>
                 <li><a href="practitioners.php">Practitioners</a></li>
                 <li><a href="testimonials.php">Stories</a></li>
-                <li><a href="auth/login.php">Login</a></li>
+                <li><a class="nav-link" href="/auth/login.php">Login</a></li>
                 <li><a href="auth/register.php">Register</a></li>
             <?php endif; ?>
         </ul>
