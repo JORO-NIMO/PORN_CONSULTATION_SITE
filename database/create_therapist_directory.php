@@ -2,8 +2,8 @@
 // CLI script to create therapist_directory database and tables
 // Usage: php database/create_therapist_directory.php [host] [user] [pass]
 
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+ini_set('display_errors', 0);
+error_reporting(0);
 
 $host = $argv[1] ?? '127.0.0.1';
 $user = $argv[2] ?? 'root';

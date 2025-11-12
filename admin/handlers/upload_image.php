@@ -1,10 +1,12 @@
 <?php
 require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../includes/auth_helpers.php';
+require_once __DIR__ . '/../../includes/jwt_middleware.php';
+
+require_jwt();
 
 // Only allow authenticated admins to upload files
-if (!isAdmin()) {
+if (!$_SESSION['is_admin']) {
     http_response_code(403);
     header('Content-Type: application/json');
     echo json_encode([
@@ -14,6 +16,7 @@ if (!isAdmin()) {
     exit();
 }
 
+$user_id = $_SESSION['user_id'];
 // CSRF validation supports token in header for AJAX
 if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
     http_response_code(403);

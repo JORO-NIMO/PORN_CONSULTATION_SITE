@@ -4,7 +4,8 @@
  * Run this with: php server.php
  */
 // Suppress deprecation warnings from vendor packages on PHP 8.2+
-error_reporting(E_ALL & ~E_DEPRECATED & ~E_USER_DEPRECATED);
+error_reporting(0);
+ini_set('display_errors', 0);
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../config/config.php';

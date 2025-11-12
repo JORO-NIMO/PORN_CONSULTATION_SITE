@@ -1,6 +1,6 @@
 <?php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/config/config.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/includes/csrf_functions.php';
+require_once __DIR__ . '/config/config.php';
+require_once __DIR__ . '/includes/csrf_functions.php';
 
 // Security headers
 header('X-Content-Type-Options: nosniff');

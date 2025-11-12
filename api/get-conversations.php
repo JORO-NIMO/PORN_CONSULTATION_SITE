@@ -1,14 +1,12 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../includes/jwt_middleware.php';
+
+require_jwt();
 
 header('Content-Type: application/json');
 
-if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['error' => 'User not logged in.']);
-    exit();
-}
-
-$user_id = $_SESSION['user_id'];
+$user_id = $jwt_payload->user_id;
 
 try {
     $pdo = getPDO();

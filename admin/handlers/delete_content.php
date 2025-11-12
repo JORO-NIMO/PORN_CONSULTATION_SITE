@@ -1,10 +1,12 @@
 <?php
 require_once __DIR__ . '/../../config/config.php';
 require_once __DIR__ . '/../../config/database.php';
-require_once __DIR__ . '/../../includes/auth_helpers.php';
+require_once __DIR__ . '/../../includes/jwt_middleware.php';
+
+require_jwt();
 
 // Ensure user is admin and it's a POST request
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isAdmin()) {
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !$_SESSION['is_admin']) {
     header('HTTP/1.1 403 Forbidden');
     exit('Access Denied');
 }
@@ -13,6 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isAdmin()) {
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+$user_id = $_SESSION['user_id'];
 
 try {
     // CSRF validation

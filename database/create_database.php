@@ -8,7 +8,7 @@ $db_root_user = 'root';  // Default XAMPP MySQL root user
 $db_root_pass = '';      // Default XAMPP MySQL root password (empty by default)
 $db_name = 'consultation_site';
 $db_user = 'consultation_user';
-$db_pass = 'secure_password_123'; // Change this to a strong password
+$db_pass = getenv('DB_CREATE_PASS') ?: ''; // Provide via env to avoid hardcoding sensitive values
 
 try {
     // Connect to MySQL server
@@ -26,7 +26,11 @@ try {
     echo "Database and user created successfully!\n";
     echo "Database: $db_name\n";
     echo "Username: $db_user\n";
-    echo "Password: $db_pass\n";
+    if ($db_pass !== '') {
+        echo "Password: (provided via DB_CREATE_PASS environment variable)\n";
+    } else {
+        echo "Password: (empty) - set DB_CREATE_PASS to a secure password before running in production\n";
+    }
     
 } catch (PDOException $e) {
     die("Error: " . $e->getMessage() . "\n");

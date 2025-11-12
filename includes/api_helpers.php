@@ -6,8 +6,8 @@
 function ah_fetch_json($url, $timeout = 10) {
     $context = stream_context_create([
         'ssl' => [
-            'verify_peer' => false,
-            'verify_peer_name' => false,
+            'verify_peer' => true,
+            'verify_peer_name' => true,
         ],
         'http' => [
             'timeout' => $timeout,

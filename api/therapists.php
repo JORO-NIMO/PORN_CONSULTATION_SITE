@@ -15,6 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { echo json_encode(['ok' => true])
 
 require_once __DIR__ . '/../includes/therapist_db.php';
 require_once __DIR__ . '/../includes/claim_mailer.php';
+require_once __DIR__ . '/../includes/jwt_middleware.php';
 
 $db = new TherapistDB();
 $pdo = $db->pdo();
@@ -45,6 +46,31 @@ if (isset($segments[2])) {
 }
 
 try {
+    if ($method === 'PUT' && $id) {
+        require_jwt();
+        $input = json_decode(file_get_contents('php://input'), true);
+        // Basic auth: must be verified and match cookie
+        $userId = $jwt_payload->user_id;
+        $stmt = $pdo->prepare('SELECT id, verified FROM therapists WHERE user_id = ? AND id = ?');
+        $stmt->execute([$userId, $id]);
+        $therapist = $stmt->fetch();
+
+        if (!$therapist) jsonResponse(['error' => 'Unauthorized'], 401);
+        if ($therapist['verified'] !== 1) jsonResponse(['error' => 'Not verified'], 403);
+        // Allow updates to specific fields
+        $fields = ['name','title','specialties','city','country','languages','contact_email','phone'];
+        $sets = []; $params = [];
+        foreach ($fields as $f) {
+            if (isset($input[$f])) { $sets[] = "$f = ?"; $params[] = trim((string)$input[$f]); }
+        }
+        if (!$sets) jsonResponse(['error' => 'No fields to update'], 422);
+        $params[] = $id;
+        $sql = 'UPDATE therapists SET ' . implode(', ', $sets) . ', updated_at = NOW() WHERE id = ?';
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($params);
+        jsonResponse(['ok' => true]);
+    }
+
     if ($method === 'GET' && !$id && !$action) {
         // List therapists
         $q = 'SELECT id, source, source_id, name, title, specialties, city, country, languages, contact_email, phone, profile_url, verified, last_scraped, updated_at FROM therapists';
@@ -96,27 +122,6 @@ try {
         // Minimal session-like cookie so edit page can allow update
         setcookie('therapist_id', (string)$claim['therapist_id'], time()+60*60*24*7, '/');
         jsonResponse(['ok' => true, 'therapist_id' => (int)$claim['therapist_id']]);
-    }
-
-    if ($method === 'PUT' && $id) {
-        $input = json_decode(file_get_contents('php://input'), true);
-        // Basic auth: must be verified and match cookie
-        $cookieId = isset($_COOKIE['therapist_id']) ? (int)$_COOKIE['therapist_id'] : 0;
-        if ($cookieId !== $id) jsonResponse(['error' => 'Unauthorized'], 401);
-        $isVerified = (int)$pdo->query('SELECT verified FROM therapists WHERE id=' . (int)$id)->fetchColumn();
-        if ($isVerified !== 1) jsonResponse(['error' => 'Not verified'], 403);
-        // Allow updates to specific fields
-        $fields = ['name','title','specialties','city','country','languages','contact_email','phone'];
-        $sets = []; $params = [];
-        foreach ($fields as $f) {
-            if (isset($input[$f])) { $sets[] = "$f = ?"; $params[] = trim((string)$input[$f]); }
-        }
-        if (!$sets) jsonResponse(['error' => 'No fields to update'], 422);
-        $params[] = $id;
-        $sql = 'UPDATE therapists SET ' . implode(', ', $sets) . ', updated_at = NOW() WHERE id = ?';
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute($params);
-        jsonResponse(['ok' => true]);
     }
 
     jsonResponse(['error' => 'Method Not Allowed'], 405);

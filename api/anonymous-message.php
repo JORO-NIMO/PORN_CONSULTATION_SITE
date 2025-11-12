@@ -2,8 +2,9 @@
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../includes/csrf_functions.php';
+require_once __DIR__ . '/../includes/jwt_middleware.php';
 
-session_start();
+require_jwt();
 
 header('Content-Type: application/json');
 
@@ -13,11 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
-if (!isset($_SESSION['user_id'])) {
-    http_response_code(401);
-    echo json_encode(['error' => 'You must be logged in to send a message.']);
-    exit;
-}
+// The user_id is now available in $_SESSION['user_id'] from the JWT middleware
+// No need for explicit session_start() or checking $_SESSION['user_id'] here
 
 if (!validate_csrf_token($_POST['csrf_token'])) {
     http_response_code(403);

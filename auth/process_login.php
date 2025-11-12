@@ -1,30 +1,20 @@
 <?php
+
 require_once __DIR__ . '/../config/config.php';
-require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../includes/auth_helpers.php';
+require_once __DIR__ . '/../includes/csrf_functions.php';
+require_once __DIR__ . '/../vendor/autoload.php'; // Composer autoloader
 
-// Start session if not already started
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
+use Firebase\JWT\JWT;
 
-// Check if form was submitted
+$errors = [];
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // CSRF validation
-    if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
-        $_SESSION['error'] = 'Invalid request token';
-        header('Location: auth/login.php');
-        exit();
-    }
-
-    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+    $email = sanitize($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
     
-    // Basic validation
-    if (empty($email) || empty($password)) {
-        $_SESSION['error'] = 'Please enter both email and password';
-        header('Location: auth/login.php');
-        exit();
+    // CSRF validation
+    if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
+        $errors[] = 'Invalid request token';
     }
     
     // Rate limiting per IP+email to mitigate brute force
@@ -33,76 +23,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!isset($_SESSION['login_attempts'])) { $_SESSION['login_attempts'] = []; }
     $attempt = $_SESSION['login_attempts'][$key] ?? ['count' => 0, 'lock_until' => 0];
     if ($attempt['lock_until'] > time()) {
-        $_SESSION['error'] = 'Too many attempts. Please try again later.';
-        header('Location: auth/login.php');
-        exit();
+        $errors[] = 'Too many attempts. Please try again later.';
     }
     
-    try {
-        // Get user from database (use password_hash column)
-        $user = $db->selectOne(
-            'SELECT id, email, password_hash, role FROM users WHERE email = ?', 
-            [$email]
-        );
+    if (empty($email) || empty($password)) {
+        $errors[] = 'Email and password are required';
+    } else {
+        $db = Database::getInstance();
+        $user = $db->fetchOne("SELECT * FROM users WHERE email = ?", [$email]);
         
-        // Verify user exists and password is correct
         if ($user && password_verify($password, $user['password_hash'])) {
-            // Successful login: rotate session ID
-            session_regenerate_id(true);
-            // Set session variables
+            // Successful login
             $_SESSION['user_id'] = $user['id'];
+            $_SESSION['user_name'] = $user['username'];
             $_SESSION['user_email'] = $user['email'];
-            // Reset rate limiting counter for this key
-            unset($_SESSION['login_attempts'][$key]);
             
             // Update last login
-            $db->update('users', 
-                ['last_login' => date('Y-m-d H:i:s')], 
-                ['id' => $user['id']]
-            );
-
-            // Optional: notify admin of login event (basic security monitoring)
-            try {
-                if (defined('ADMIN_EMAIL') && filter_var(ADMIN_EMAIL, FILTER_VALIDATE_EMAIL)) {
-                    require_once __DIR__ . '/../includes/mail_helper.php';
-                    $siteName = defined('SITE_NAME') ? SITE_NAME : 'Website';
-                    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-                    $ua = $_SERVER['HTTP_USER_AGENT'] ?? 'unknown';
-                    $adminHtml = '<p>User logged in:</p>' .
-                                 '<ul><li>Email: ' . htmlspecialchars($user['email']) . '</li>' .
-                                 '<li>Time: ' . date('Y-m-d H:i:s') . '</li>' .
-                                 '<li>IP: ' . htmlspecialchars($ip) . '</li>' .
-                                 '<li>UA: ' . htmlspecialchars($ua) . '</li></ul>';
-                    @send_mail_safe(ADMIN_EMAIL, '[' . $siteName . '] Login notification', $adminHtml);
-                }
-            } catch (Throwable $e) {
-                error_log('Login mail error: ' . $e->getMessage());
-            }
+            $db->query("UPDATE users SET last_login = NOW() WHERE id = ?", [$user['id']]);
             
-            // Redirect to dashboard
-            header('Location: /dashboard.php');
-            exit();
+            // Create session record
+            $sessionId = generateToken(64);
+            $db->query(
+                "INSERT INTO sessions (id, user_id, ip_address, user_agent, expires_at) VALUES (?, ?, ?, ?, DATE_ADD(NOW(), INTERVAL ? SECOND))",
+                [$sessionId, $user['id'], $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT'], SESSION_LIFETIME]
+            );
+            
+            // Reset rate limiting on success
+            $_SESSION['login_attempts'][$key] = ['count' => 0, 'lock_until' => 0];
+
+            // Generate JWT
+            $issuedAt = time();
+            $expirationTime = $issuedAt + SESSION_LIFETIME; // JWT valid for SESSION_LIFETIME seconds
+            $payload = [
+                'iat' => $issuedAt, // Issued at: time when the token was generated
+                'exp' => $expirationTime, // Expiration time
+                'data' => [
+                    'userId' => $user['id'],
+                    'email' => $user['email'],
+                    'username' => $user['username']
+                ]
+            ];
+
+            $jwt = JWT::encode($payload, JWT_SECRET, 'HS256');
+
+            // Return JWT as JSON
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true, 'jwt' => $jwt, 'redirect' => '../dashboard.php']);
+            exit;
         } else {
-            // Increment attempt count and enforce lockout if needed
-            $attempt['count']++;
-            if (defined('MAX_LOGIN_ATTEMPTS') && defined('LOGIN_LOCKOUT_TIME') && $attempt['count'] >= MAX_LOGIN_ATTEMPTS) {
+            $errors[] = 'Invalid email or password';
+            // Increment attempts and possibly lock
+            $attempt['count'] = ($attempt['count'] ?? 0) + 1;
+            if ($attempt['count'] >= MAX_LOGIN_ATTEMPTS) {
                 $attempt['lock_until'] = time() + LOGIN_LOCKOUT_TIME;
-                $attempt['count'] = 0;
             }
             $_SESSION['login_attempts'][$key] = $attempt;
-
-            $_SESSION['error'] = 'Invalid email or password';
-            header('Location: auth/login.php');
-            exit();
         }
-    } catch (Exception $e) {
-        error_log('Login error: ' . $e->getMessage());
-        $_SESSION['error'] = 'An error occurred. Please try again later.';
-        header('Location: auth/login.php');
-        exit();
     }
-} else {
-    // If not a POST request, redirect to login
-    header('Location: auth/login.php');
-    exit();
+}
+
+if (!empty($errors)) {
+    $error_string = implode('&', array_map(function($e) { return 'error[]=' . urlencode($e); }, $errors));
+    header('Location: login.php?' . $error_string);
+    exit;
 }

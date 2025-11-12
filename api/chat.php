@@ -1,6 +1,9 @@
 <?php
 // Load configuration
 require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../includes/jwt_middleware.php';
+
+require_jwt();
 
 // Set headers
 header('Content-Type: application/json');

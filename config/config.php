@@ -43,15 +43,45 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
 }
 
 // Security settings
-define('SITE_KEY', bin2hex(random_bytes(32))); // Generate unique key for CSRF
+// SITE_KEY should be stable between requests. Prefer setting via environment variable
+// (e.g. in your webserver or .env). If not provided, persist a generated key to
+// a file with restrictive permissions so CSRF tokens remain valid across requests.
+$siteKeyEnv = getenv('SITE_KEY') ?: null;
+if ($siteKeyEnv) {
+    define('SITE_KEY', $siteKeyEnv);
+} else {
+    $keyFile = __DIR__ . '/site_key.secret';
+    $existing = false;
+    if (is_file($keyFile)) {
+        $k = trim(@file_get_contents($keyFile));
+        if ($k !== '') {
+            define('SITE_KEY', $k);
+            $existing = true;
+        }
+    }
+    if (!$existing) {
+        try {
+            $k = bin2hex(random_bytes(32));
+        } catch (Exception $e) {
+            // Fallback to less-strong but deterministic fallback if random_bytes fails
+            $k = hash('sha256', uniqid((string)mt_rand(), true));
+        }
+        @file_put_contents($keyFile, $k, LOCK_EX);
+        @chmod($keyFile, 0600);
+        define('SITE_KEY', $k);
+    }
+}
 define('SESSION_LIFETIME', 3600 * 24); // 24 hours
 define('BCRYPT_COST', 12);
 
 // Site settings
 define('SITE_NAME', 'Mental Freedom Path');
 define('SITE_TAGLINE', 'Breaking the stigma to help parents raise resilient youth');
-define('SITE_URL', 'http://localhost/consultation_site');
+define('SITE_URL', getenv('SITE_URL') ?: 'http://localhost/consultation_site');
 define('ADMIN_EMAIL', 'joronimoamanya@gmail.com');
+
+// JWT Secret Key
+define('JWT_SECRET', getenv('JWT_SECRET') ?: 'your_jwt_secret_key_here');
 
 // File upload settings
 define('UPLOAD_DIR', __DIR__ . '/../uploads/');

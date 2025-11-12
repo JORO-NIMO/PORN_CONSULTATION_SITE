@@ -1,12 +1,23 @@
 <?php
 require_once __DIR__ . '/config/config.php';
-requireLogin();
+require_once __DIR__ . '/includes/jwt_middleware.php';
+
+$jwt_payload = require_jwt();
+$user_id = $jwt_payload['sub'] ?? null;
+
+if (!$user_id) {
+    // Handle case where user_id is not in JWT payload (shouldn't happen if require_jwt passes)
+    http_response_code(401);
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Unauthorized: User ID not found in token.']);
+    exit;
+}
 
 $db = Database::getInstance();
 
 // Get user stats
-$messageCount = $db->fetchOne("SELECT COUNT(*) as count FROM messages WHERE sender_id = ?", [$_SESSION['user_id']])['count'];
-$consultationCount = $db->fetchOne("SELECT COUNT(*) as count FROM consultations WHERE user_id = ?", [$_SESSION['user_id']])['count'];
+$messageCount = $db->fetchOne("SELECT COUNT(*) as count FROM messages WHERE sender_id = ?", [$user_id])['count'];
+$consultationCount = $db->fetchOne("SELECT COUNT(*) as count FROM consultations WHERE user_id = ?", [$user_id])['count'];
 
 // Get featured educational content
 $featuredContent = $db->fetchAll("SELECT * FROM educational_content WHERE is_featured = 1 ORDER BY created_at DESC LIMIT 3");
@@ -18,8 +29,12 @@ $upcomingConsultations = $db->fetchAll(
      JOIN psychiatrists p ON c.psychiatrist_id = p.id 
      WHERE c.user_id = ? AND c.status = 'scheduled' AND c.scheduled_time > NOW() 
      ORDER BY c.scheduled_time ASC LIMIT 3",
-    [$_SESSION['user_id']]
+    [$user_id]
 );
+
+// Fetch user details for display
+$user = $db->fetchOne("SELECT username FROM users WHERE id = ?", [$user_id]);
+$username = $user['username'] ?? 'User';
 
 ?>
 <!DOCTYPE html>
@@ -41,7 +56,7 @@ $upcomingConsultations = $db->fetchAll(
     <main class="dashboard">
         <div class="container">
             <div class="welcome-section">
-                <h1>Welcome back, <?php echo sanitize($_SESSION['user_name']); ?>!</h1>
+                <h1>Welcome back, <?php echo sanitize($username); ?>!</h1>
                 <p class="subtitle">Your journey to freedom continues here</p>
             </div>
             

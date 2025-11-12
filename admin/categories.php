@@ -1,11 +1,16 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../includes/auth_helpers.php';
+require_once __DIR__ . '/../includes/jwt_middleware.php';
 require_once __DIR__ . '/../includes/helpers.php';
 
+require_jwt();
+
 // Ensure user is admin
-requireAdmin();
+if (!isset($_SESSION['is_admin']) || !$_SESSION['is_admin']) {
+    header('Location: /auth/login.php'); // Redirect to login if not admin
+    exit();
+}
 
 // Set page title and include header
 $pageTitle = 'Content Categories';

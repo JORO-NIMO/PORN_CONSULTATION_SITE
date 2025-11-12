@@ -3,16 +3,19 @@
  * Mental Freedom Path - Configuration
  */
 
-// Environment settings
-define('ENVIRONMENT', 'development'); // 'production' or 'development'
+// Environment settings - allow overriding via ENV variables to avoid accidental
+// debug mode in production (use MFP_ENVIRONMENT to scope to this subapp).
+if (!defined('ENVIRONMENT')) {
+    define('ENVIRONMENT', getenv('MFP_ENVIRONMENT') ?: getenv('ENVIRONMENT') ?: 'development');
+}
 
 // Error reporting
 if (ENVIRONMENT === 'development') {
     error_reporting(E_ALL);
-    ini_set('display_errors', 1);
+    ini_set('display_errors', '1');
 } else {
     error_reporting(0);
-    ini_set('display_errors', 0);
+    ini_set('display_errors', '0');
 }
 
 // Database configuration

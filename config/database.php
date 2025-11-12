@@ -7,19 +7,19 @@ if (PHP_SAPI !== 'cli') {
     header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; connect-src 'self' ws: wss: https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';");
 }
 
-// Disable error display in production
+// Disable error display in production. Use ENVIRONMENT env var to control behavior.
 if (!defined('ENVIRONMENT')) {
-    define('ENVIRONMENT', 'development'); // Change to 'production' in production
+    define('ENVIRONMENT', getenv('ENVIRONMENT') ?: 'development');
 }
 
 error_reporting(ENVIRONMENT === 'development' ? E_ALL : 0);
 ini_set('display_errors', ENVIRONMENT === 'development' ? '1' : '0');
 
 // Database configuration
-define('DB_HOST', '127.0.0.1'); // Using IP instead of localhost to avoid potential socket issues
-define('DB_NAME', 'antiporn_campaign');
-define('DB_USER', 'root');
-define('DB_PASS', '1234'); // Default XAMPP has no password
+define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
+define('DB_NAME', getenv('DB_NAME') ?: 'consultation_site');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASS') ?: '');
 define('DB_CHARSET', 'utf8mb4');
 
 class Database {
@@ -36,50 +36,11 @@ class Database {
         ];
         
         try {
-            // Try to create the database if it doesn't exist
-            try {
-                $this->pdo = new PDO("mysql:host=" . DB_HOST, DB_USER, DB_PASS, $options);
-                $this->pdo->exec("CREATE DATABASE IF NOT EXISTS `" . DB_NAME . "` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
-                $this->pdo->exec("USE `" . DB_NAME . "`");
-                $this->pdo->exec("DROP TABLE IF EXISTS `therapists`;");
-                $this->pdo->exec("
-                    CREATE TABLE `therapists` (
-                        `id` INT AUTO_INCREMENT PRIMARY KEY,
-                        `name` VARCHAR(255) NOT NULL,
-                        `medical_specialty` TEXT,
-                        `address_locality` VARCHAR(255),
-                        `address_country` VARCHAR(255),
-                        `telephone` VARCHAR(255),
-                        `contact_email` VARCHAR(255),
-                        `url` VARCHAR(255),
-                        `image` VARCHAR(255),
-                        `source` VARCHAR(255),
-                        `source_id` VARCHAR(255) UNIQUE,
-                        `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                        `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-                    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-                ");
-            } catch (PDOException $e) {
-                // If connection fails, try without specifying database first
-                try {
-                    $this->pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
-                } catch (PDOException $e) {
-                    // If that fails, provide detailed error information
-                    error_log('Database connection failed: ' . $e->getMessage());
-                    if (ENVIRONMENT === 'development') {
-                        die('Database connection failed: ' . htmlspecialchars($e->getMessage()));
-                    } else {
-                        die('Database connection failed. Please try again later.');
-                    }
-                }
-            }
+            $this->pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
         } catch (PDOException $e) {
+            // Log and rethrow so callers (or global exception handler) can decide how to respond.
             error_log('Database connection failed: ' . $e->getMessage());
-            if (ENVIRONMENT === 'development') {
-                die('Database connection failed: ' . htmlspecialchars($e->getMessage()));
-            } else {
-                die('Database connection failed. Please try again later.');
-            }
+            throw $e;
         }
     }
     
@@ -193,5 +154,11 @@ class Database {
     }
 }
 
-// Create a global instance for backward compatibility
-$db = Database::getInstance();
+// Create a global instance for backward compatibility. Wrap in try/catch to avoid
+// fatal include-time exits; higher-level code can handle a null $db gracefully.
+try {
+    $db = Database::getInstance();
+} catch (Exception $e) {
+    error_log('Failed to initialize Database instance: ' . $e->getMessage());
+    $db = null;
+}

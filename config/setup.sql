@@ -194,23 +194,3 @@ CREATE TABLE IF NOT EXISTS media (
     INDEX idx_user (user_id),
     INDEX idx_created (created_at)
 ) ENGINE=InnoDB;
-
--- Insert sample users
-INSERT INTO users (id, email, name, password_hash, is_anonymous) VALUES
-(1, 'testuser@example.com', 'Test User', '$2y$10$abcdefghijklmnopqrstuvwxy.abcdefghijklmnopqrs', FALSE);
-
--- Insert sample psychiatrists
-INSERT INTO psychiatrists (name, specialization, bio, qualifications, experience_years, email, phone, availability, rating, is_active) VALUES
-('Dr. Sarah Mitchell', 'Addiction & Behavioral Health', 'Specialized in treating behavioral addictions including pornography addiction. Compassionate, evidence-based approach.', 'PhD Clinical Psychology, Certified Addiction Specialist', 12, 'dr.mitchell@example.com', '+256700111222', '{"monday": "9:00-17:00", "wednesday": "9:00-17:00", "friday": "9:00-17:00"}', 4.85, TRUE),
-('Dr. James Okello', 'Sexual Health & Relationships', 'Expert in sexual health counseling and relationship therapy. Helps individuals and couples overcome pornography-related issues.', 'MD Psychiatry, Sex Therapy Certification', 15, 'dr.okello@example.com', '+256700333444', '{"tuesday": "10:00-18:00", "thursday": "10:00-18:00", "saturday": "9:00-13:00"}', 4.92, TRUE),
-('Dr. Emily Nakato', 'Cognitive Behavioral Therapy', 'Specializes in CBT for addiction recovery. Focuses on rewiring thought patterns and building healthy habits.', 'PhD Psychology, CBT Specialist', 8, 'dr.nakato@example.com', '+256700555666', '{"monday": "8:00-16:00", "tuesday": "8:00-16:00", "thursday": "8:00-16:00"}', 4.78, TRUE),
-('Dr. Michael Ssempa', 'Family & Marriage Counseling', 'Helps families heal from the impact of pornography addiction. Restores trust and intimacy in relationships.', 'MA Family Therapy, Licensed Counselor', 10, 'dr.ssempa@example.com', '+256700777888', '{"wednesday": "11:00-19:00", "friday": "11:00-19:00"}', 4.88, TRUE);
-
--- Insert sample educational content
-INSERT INTO educational_content (title, content, content_type, category, tags, is_featured) VALUES
-('The Neuroscience of Pornography Addiction', 'Research shows that pornography consumption triggers the same brain pathways as substance addiction. The dopamine release creates a powerful reward cycle that becomes increasingly difficult to break. Studies indicate that regular users develop tolerance, requiring more extreme content for the same effect.', 'research', 'Science', '["neuroscience", "addiction", "brain"]', TRUE),
-('Real Relationships vs. Digital Fantasy', 'Pornography creates unrealistic expectations about sex, bodies, and relationships. It can lead to decreased satisfaction in real intimate relationships, performance anxiety, and emotional disconnection from partners.', 'article', 'Relationships', '["relationships", "intimacy", "expectations"]', TRUE),
-('Statistics: The Hidden Epidemic', '- 64% of young people actively seek out pornography weekly or more often\n- 94% of children see pornography by age 14\n- Pornography users are 3x more likely to experience erectile dysfunction\n- 56% of divorces involve one party having an obsessive interest in pornographic websites', 'statistic', 'Statistics', '["statistics", "impact", "society"]', TRUE),
-('Recovery is Possible: Success Stories', 'Thousands have successfully overcome pornography addiction. Recovery involves understanding triggers, building accountability, developing healthy coping mechanisms, and often professional support. The brain can heal and rewire itself with sustained abstinence.', 'testimony', 'Recovery', '["recovery", "hope", "success"]', TRUE),
-('Impact on Mental Health', 'Pornography consumption is linked to increased rates of depression, anxiety, and low self-esteem. Users often experience shame, guilt, and isolation. The secretive nature of the habit compounds mental health challenges.', 'article', 'Mental Health', '["mental health", "depression", "anxiety"]', FALSE),
-('Physical Effects and Sexual Dysfunction', 'Regular pornography use can lead to erectile dysfunction in young men, delayed ejaculation, and decreased sexual satisfaction. The overstimulation of the reward system affects real-world sexual response.', 'research', 'Health', '["physical health", "sexual dysfunction", "effects"]', FALSE);

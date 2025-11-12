@@ -1,13 +1,28 @@
 <?php
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../config/database.php';
-require_once __DIR__ . '/../includes/auth_helpers.php';
-requireAdmin(); // This ensures only admins can access this page
+require_once __DIR__ . '/../includes/jwt_middleware.php';
 
-// Get database instance
+$jwt_payload = require_jwt();
+$user_id = $jwt_payload['sub'] ?? null;
+
+if (!$user_id) {
+    http_response_code(401);
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Unauthorized: User ID not found in token.']);
+    exit;
+}
+
 $db = Database::getInstance();
 
-
+// Check if the user is an admin
+$user = $db->fetchOne("SELECT is_admin FROM users WHERE id = ?", [$user_id]);
+if (!$user || !$user['is_admin']) {
+    http_response_code(403);
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Forbidden: Admin access required.']);
+    exit;
+}
 
 // Function to get time elapsed string
 function time_elapsed_string($datetime, $full = false) {

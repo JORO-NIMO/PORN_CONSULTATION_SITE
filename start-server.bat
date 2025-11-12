@@ -31,6 +31,7 @@ if %ERRORLEVEL% NEQ 0 (
 )
 
 REM Start the server
+set DB_PASS=1234
 echo Starting server on http://localhost:8000
 echo.
 echo Press Ctrl+C to stop the server

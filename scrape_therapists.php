@@ -7,8 +7,7 @@ function scrapeTherapists($url) {
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // WARNING: This is insecure, use only for testing
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false); // WARNING: This is insecure, use only for testing
+    
     $html = curl_exec($ch);
     if (curl_errno($ch)) {
         throw new Exception(curl_error($ch));

@@ -1,6 +1,8 @@
 <?php
 require_once '../config/config.php';
-requireLogin();
+require_once '../includes/jwt_middleware.php';
+
+require_jwt();
 
 header('Content-Type: application/json');
 
@@ -20,7 +22,7 @@ $db = Database::getInstance();
 // Verify consultation belongs to user
 $consultation = $db->fetchOne(
     "SELECT * FROM consultations WHERE id = ? AND user_id = ?",
-    [$consultationId, $_SESSION['user_id']]
+    [$consultationId, $jwt_payload->user_id]
 );
 
 if (!$consultation) {
